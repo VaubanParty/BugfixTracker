@@ -1,8 +1,9 @@
 package pfe.main;
 
 
+import java.io.BufferedWriter;
 import java.io.File;
-import java.util.ArrayList;
+import java.io.FileWriter;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -50,11 +51,18 @@ public class MainClass {
 	public static void diffspoonTry (Repository repository) throws Exception	{
 		Git git = new Git (repository);
 		RevWalk rw = new RevWalk(repository);
-		List<String> returnCommits = new ArrayList<String>();
-		List<String> localVarCommits = new ArrayList<String>();
-		List<String> fieldReadCommits = new ArrayList<String>();
-		List<String> assignmentCommits = new ArrayList<String>();
 		int totalcommit = 1;
+       
+        File res_assign = new File(project + "/results/assignments.txt");       
+		File res_local = new File(project + "/results/localvar.txt");
+		File res_return = new File(project + "/results/return.txt");
+		File res_field = new File(project + "/results/fieldread.txt");
+		
+		FileWriter fileWriterAssign = new FileWriter(res_assign, true);
+		FileWriter fileWriterLocal = new FileWriter(res_local, true);
+		FileWriter fileWriterReturn = new FileWriter(res_return, true);
+		FileWriter fileWriterField = new FileWriter(res_field, true);
+
 		
 		List<Ref> branches = git.branchList().call();
 		
@@ -112,7 +120,6 @@ public class MainClass {
     					FileUtils.writeStringToFile(f1, currentContent);
     					FileUtils.writeStringToFile(f2, previousContent);
     					
-    					
     						if (f1 != null && f2 != null)	{
     							try	{
     							DiffSpoon diffspoon = new DiffSpoon(true);
@@ -127,27 +134,33 @@ public class MainClass {
     							// update / insert
     							if (diffspoon.containsAction(rootActions, "Insert", "FieldRead") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
     							{
-    								fieldReadCommits.add(commit.getName());
+    								BufferedWriter bufferedWriterField = new BufferedWriter(fileWriterField);
+    								System.out.println(commit.getName());
+    								bufferedWriterField.write(commit.getName() + "\n");
     								nbFieldRead++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Assignment") || diffspoon.containsAction(rootActions, "Update", "Assignment"))
     							{
-    								assignmentCommits.add(commit.getName());
-    								nbAssignment++;
+    								BufferedWriter bufferedWriterAssign = new BufferedWriter(fileWriterAssign);
+    								bufferedWriterAssign.write(commit.getName() + "\n");
+    								nbFieldRead++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Return") || diffspoon.containsAction(rootActions, "Update", "Return"))
     							{
-    								returnCommits.add(commit.getName());
-    								nbReturn++;
+    								BufferedWriter bufferedWriterReturn = new BufferedWriter(fileWriterReturn);
+    								bufferedWriterReturn.write(commit.getName() + "\n");
+    								nbFieldRead++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "LocalVariable") || diffspoon.containsAction(rootActions, "Update", "LocalVariable"))
     							{
-    								localVarCommits.add(commit.getName());
-    								nbLocalVar++;
+    								BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
+    								bufferedWriterLocal.write(commit.getName() + "\n");
+    								nbFieldRead++;
     							}
+
     						}
 	    							// Stocker commmit id tel que common ancestor
 	    							// Liste actions, pour chaque action
@@ -209,11 +222,11 @@ public class MainClass {
     					}
     				}
 	        	}
-	        	if (nbcommit > 2999)
+	        	if (nbcommit > 49)
 	    			break;
 	        }
-	        
-	        
+		
+
         System.out.println(nberrors + " errors");
         System.out.println(nbcommit + " commits");
         System.out.println(nbchange + " total changes");
