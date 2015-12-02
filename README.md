@@ -35,7 +35,7 @@ I'll give here the current progression of each goal.
    		- SpoonClassNotFound
    		- RuntimeException
    		
-   	- [02/12/2015] Experimentations began, and results are given in (this table)[https://github.com/VaubanParty/BugfixTracker/results/table.md]
+   	- [02/12/2015] Experimentations began, and results are given in [this table](https://github.com/VaubanParty/BugfixTracker/blob/master/results/table.md)
    	I suppose they are from Spoon, as Cassandra is fully operational and as we treat only .java files.
    	I'll try to work on memory, as the process is using a lot of memory from storing datas and creating trees
    	for each project. The main problem here is that it is impossible to treat ALL the commits as expected. 
