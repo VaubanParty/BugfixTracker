@@ -1,9 +1,8 @@
 package pfe.main;
 
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
@@ -47,25 +46,22 @@ public class MainClass {
 	}
 	
 	
-
+	@SuppressWarnings("resource")
 	public static void diffspoonTry (Repository repository) throws Exception	{
 		Git git = new Git (repository);
 		RevWalk rw = new RevWalk(repository);
+		List<String> fieldcommits = new ArrayList<String>();
+		List<String> localcommits = new ArrayList<String>();
+		List<String> returncommits = new ArrayList<String>();
+		List<String> assignmentcommits = new ArrayList<String>();
 		int totalcommit = 1;
-       
-        File res_assign = new File(project + "/results/assignments.txt");       
-		File res_local = new File(project + "/results/localvar.txt");
-		File res_return = new File(project + "/results/return.txt");
-		File res_field = new File(project + "/results/fieldread.txt");
+		File res_assign = new File("assignments.txt");       
+		File res_local = new File("localvar.txt");
+		File res_return = new File("return.txt");
+		File res_field = new File("fieldread.txt");
 		
-		FileWriter fileWriterAssign = new FileWriter(res_assign, true);
-		FileWriter fileWriterLocal = new FileWriter(res_local, true);
-		FileWriter fileWriterReturn = new FileWriter(res_return, true);
-		FileWriter fileWriterField = new FileWriter(res_field, true);
-
 		
 		List<Ref> branches = git.branchList().call();
-		
 		
 		for (Ref branch : branches) {
 			int nberrors = 0;
@@ -134,31 +130,26 @@ public class MainClass {
     							// update / insert
     							if (diffspoon.containsAction(rootActions, "Insert", "FieldRead") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
     							{
-    								BufferedWriter bufferedWriterField = new BufferedWriter(fileWriterField);
-    								System.out.println(commit.getName());
-    								bufferedWriterField.write(commit.getName() + "\n");
+    								fieldcommits.add("\n" + commit.getName());
     								nbFieldRead++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Assignment") || diffspoon.containsAction(rootActions, "Update", "Assignment"))
     							{
-    								BufferedWriter bufferedWriterAssign = new BufferedWriter(fileWriterAssign);
-    								bufferedWriterAssign.write(commit.getName() + "\n");
-    								nbFieldRead++;
+    								assignmentcommits.add("\n" + commit.getName());
+    								nbAssignment++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Return") || diffspoon.containsAction(rootActions, "Update", "Return"))
     							{
-    								BufferedWriter bufferedWriterReturn = new BufferedWriter(fileWriterReturn);
-    								bufferedWriterReturn.write(commit.getName() + "\n");
-    								nbFieldRead++;
+    								returncommits.add("\n" + commit.getName());
+    								nbReturn++;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "LocalVariable") || diffspoon.containsAction(rootActions, "Update", "LocalVariable"))
     							{
-    								BufferedWriter bufferedWriterLocal = new BufferedWriter(fileWriterLocal);
-    								bufferedWriterLocal.write(commit.getName() + "\n");
-    								nbFieldRead++;
+    								localcommits.add("\n" + commit.getName());
+    								nbLocalVar++;
     							}
 
     						}
@@ -205,7 +196,6 @@ public class MainClass {
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
-    								System.out.println("OOB error");
     							}
     							catch (java.lang.RuntimeException e)
     							{
@@ -216,14 +206,11 @@ public class MainClass {
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
-    								System.out.println("OOB error");
     							}
     						} 				
     					}
     				}
 	        	}
-	        	if (nbcommit > 49)
-	    			break;
 	        }
 		
 
@@ -235,6 +222,12 @@ public class MainClass {
 		System.out.println(nbLocalVar + " updates or insert of local variables ");
 		System.out.println(nbReturn + " updates or insert of returns");
 		System.out.println(nbFieldRead + " updates or insert of field reads");
+		
+		
+		 FileUtils.writeStringToFile(res_assign, assignmentcommits.toString());
+	     FileUtils.writeStringToFile(res_local, localcommits.toString());
+	     FileUtils.writeStringToFile(res_return, returncommits.toString());
+	     FileUtils.writeStringToFile(res_field, fieldcommits.toString());
        }            	
 	}
 }

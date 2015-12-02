@@ -28,6 +28,19 @@ I'll give here the current progression of each goal.
         - Field reads
         - Local variables
         
+   	- [02/12/2015] BugfixTracker is fully working on Cassandra, getting error files in order to correct
+   	Spoon or detecting failures. Five errors are actually caught:
+   		- NullPointerException
+   		- AbortCompilation
+   		- IndexOutOfBounds
+   		- SpoonClassNotFound
+   		- RuntimeException
+   		
+   	I suppose they are from Spoon, as Cassandra is fully operational and as we treat only .java files.
+   	I'll try to work on memory, as the process is using a lot of memory from storing datas and creating trees
+   	for each project. The main problem here is that it is impossible to treat ALL the commits as expected. 
+    
+    
     I am currently working on the classification on some projects. You can find the list below.
     
     * Aries
