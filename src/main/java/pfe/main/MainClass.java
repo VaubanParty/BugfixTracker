@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "bugfixRepoSamples/cassandra";
+	static String project = "bugfixRepoSamples/mahout";
 	
 	static String directoryPath = "../" + project + "/.git";
 	
@@ -46,7 +46,6 @@ public class MainClass {
 	}
 	
 	
-	@SuppressWarnings("resource")
 	public static void diffspoonTry (Repository repository) throws Exception	{
 		Git git = new Git (repository);
 		RevWalk rw = new RevWalk(repository);
@@ -55,10 +54,11 @@ public class MainClass {
 		List<String> returncommits = new ArrayList<String>();
 		List<String> assignmentcommits = new ArrayList<String>();
 		int totalcommit = 1;
-		File res_assign = new File("assignments.txt");       
-		File res_local = new File("localvar.txt");
-		File res_return = new File("return.txt");
-		File res_field = new File("fieldread.txt");
+		
+		File res_assign = new File("results/" + project + "/assignments.txt");       
+		File res_local = new File("results/" + project + "/localvar.txt");
+		File res_return = new File("results/" + project + "/return.txt");
+		File res_field = new File("results/" + project + "/fieldread.txt");
 		
 		
 		List<Ref> branches = git.branchList().call();
@@ -72,7 +72,8 @@ public class MainClass {
 			int nbFieldRead = 0;
 			int nbchange = 0;
 			
-	        String branchName = branch.getName();
+	        @SuppressWarnings("unused")
+			String branchName = branch.getName();
 
 	        System.out.println("Commits of branch: " + branch.getName());
 	        System.out.println("-------------------------------------");
@@ -80,6 +81,11 @@ public class MainClass {
 	        Iterable<RevCommit> commits = git.log().all().call();
 
 	        for (RevCommit commit : commits) {
+	        	boolean assigned = false;
+	        	boolean returned = false;
+	        	boolean fielded = false;
+	        	boolean localed = false;
+	        	
 	        	System.out.println("\n-------------------------------------");
 	        	System.out.println("--- Files of commit n°" + totalcommit + " with ID : " + commit.getName());
 		        System.out.println("-------------------------------------");
@@ -102,16 +108,13 @@ public class MainClass {
 	    		
 	    		
 	    		for (DiffEntry diff : diffs) {
-	    			String currentContentPath = project + "/" + branchName + "/" + commit.getName() + "_new/" + diff.getNewPath();
-    				String previousContentPath = project + "/" + branchName + "/" + commit.getName() + "_old/" + diff.getOldPath();
-    				
 	    			String currentContent = BlobUtils.getContent(repository, commit.getId(), diff.getNewPath());
 	    			String previousContent = BlobUtils.getContent(repository, commit.getParent(0).getId(), diff.getOldPath());
 	    				
 	    			
-    				if (currentContentPath.contains(".java"))	{
-    					File f1 = new File(currentContentPath);
-    					File f2 = new File(previousContentPath);
+    				if (diff.getNewPath().contains(".java"))	{
+    					File f1 = new File("c1.java");
+    					File f2 = new File("c2.java");
     					
     					FileUtils.writeStringToFile(f1, currentContent);
     					FileUtils.writeStringToFile(f2, previousContent);
@@ -130,26 +133,39 @@ public class MainClass {
     							// update / insert
     							if (diffspoon.containsAction(rootActions, "Insert", "FieldRead") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
     							{
-    								fieldcommits.add("\n" + commit.getName());
-    								nbFieldRead++;
+    								if (!fielded)	{
+    									fieldcommits.add("\n" + commit.getName());
+        								nbFieldRead++;
+    								}
+    								fielded = true;
+    					
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Assignment") || diffspoon.containsAction(rootActions, "Update", "Assignment"))
     							{
+    								if (!assigned)	{
     								assignmentcommits.add("\n" + commit.getName());
     								nbAssignment++;
+    								}
+    								assigned = true;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "Return") || diffspoon.containsAction(rootActions, "Update", "Return"))
     							{
-    								returncommits.add("\n" + commit.getName());
-    								nbReturn++;
+    								if (!returned)	{
+    									returncommits.add("\n" + commit.getName());
+        								nbReturn++;
+    								}
+    								returned = true;
     							}
     							
     							if (diffspoon.containsAction(rootActions, "Insert", "LocalVariable") || diffspoon.containsAction(rootActions, "Update", "LocalVariable"))
     							{
-    								localcommits.add("\n" + commit.getName());
-    								nbLocalVar++;
+    								if (!localed)	{
+    									localcommits.add("\n" + commit.getName());
+    									nbLocalVar++;
+    								}
+    								localed = true;
     							}
 
     						}
