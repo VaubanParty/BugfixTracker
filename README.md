@@ -34,7 +34,7 @@ Spoon or detecting failures. Five errors are actually caught:
    - AbortCompilation
    - IndexOutOfBounds
    - SpoonClassNotFound
-	- RuntimeException
+   - RuntimeException
    		
 [02/12/2015] Experimentations began.
     
@@ -47,21 +47,21 @@ Results are given in [this table.](https://github.com/VaubanParty/BugfixTracker/
    
 Data Set
 --------
-    I am currently working on the following projects:
-    
-    * [Aries](https://github.com/apache/aries)
-    * [Atmosphere](https://github.com/Atmosphere/atmosphere)
-    * [Cassandra](https://github.com/apache/cassandra)
-    * [Derby](https://github.com/apache/derby)
-    * [Elastic Search](https://github.com/elastic/elasticsearch)
-    * [Facebook Android SDK](https://github.com/facebook/facebook-android-sdk)
-    * [Lucene](https://github.com/apache/lucene-solr)
-    * [Mahout](https://github.com/apache/mahout)
-    * [Netty](https://github.com/netty/netty)
-    * [OpenJPA](https://github.com/apache/openjpa)
-    * [Presto](https://github.com/facebook/presto)
-    * [Qpid Proton](https://github.com/apache/qpid-proton)
-    * [Wicket](https://github.com/apache/wicket)
+I am currently working on the following projects:
+
+* [Aries](https://github.com/apache/aries)
+* [Atmosphere](https://github.com/Atmosphere/atmosphere)
+* [Cassandra](https://github.com/apache/cassandra)
+* [Derby](https://github.com/apache/derby)
+* [Elastic Search](https://github.com/elastic/elasticsearch)
+* [Facebook Android SDK](https://github.com/facebook/facebook-android-sdk)
+* [Lucene](https://github.com/apache/lucene-solr)
+* [Mahout](https://github.com/apache/mahout)
+* [Netty](https://github.com/netty/netty)
+* [OpenJPA](https://github.com/apache/openjpa)
+* [Presto](https://github.com/facebook/presto)
+* [Qpid Proton](https://github.com/apache/qpid-proton)
+* [Wicket](https://github.com/apache/wicket)
     
 
         
