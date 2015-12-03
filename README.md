@@ -81,7 +81,7 @@ More strange, this looks like it is a natural behavior: all the programs are sho
 command or remote repository. This is not natural, there is maybe a way that it also takes merges into account,
 making this really hard to get.
 
-If anyone find some reason for this behavior, with their knowledge of (JGit)[https://github.com/eclipse/jgit],
+If anyone find some reason for this behavior, with their knowledge of [JGit](https://github.com/eclipse/jgit),
 feel free to contact me; I would be glad to discuss about it:
 	yassine.badache@gmail.com
 	
