@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "qpid-proton";
+	static String project = "mahout";
 	
 	static String projectOwner = "apache";
 	
