@@ -1,4 +1,7 @@
 /bin/
+
 /target/
-/bugfixRepoSamples/
+
+/errorfiles/
+
 /doc/

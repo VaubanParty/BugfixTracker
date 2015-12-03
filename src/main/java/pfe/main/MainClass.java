@@ -28,9 +28,11 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "bugfixRepoSamples/elasticsearch";
+	static String project = "facebook-android-sdk";
 	
-	static String directoryPath = "../" + project + "/.git";
+	static String projectOwner = "facebook";
+	
+	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
 	
 	public static void main (String args[])	throws Exception {
@@ -38,11 +40,6 @@ public class MainClass {
 		Repository repository = bftUtils.setRepository(directoryPath);
 		
 		diffspoonTry(repository);
-		
-		/* CtDiff result = diffspoon.compare(new File("bugfixRepoSamples/cassandra/refs/heads/trunk/f81a91d3fe0d1cd93f093c74356a1d7d018ed22f_new/src/java/org/apache/cassandra/db/ColumnIndex.java"),
-				new File("bugfixRepoSamples/cassandra/refs/heads/trunk/f81a91d3fe0d1cd93f093c74356a1d7d018ed22f_old/src/java/org/apache/cassandra/db/ColumnIndex.java"));
-		
-		 System.out.println(result.toString()); */
 	}
 	
 	
@@ -53,6 +50,11 @@ public class MainClass {
 		List<String> localcommits = new ArrayList<String>();
 		List<String> returncommits = new ArrayList<String>();
 		List<String> assignmentcommits = new ArrayList<String>();
+		fieldcommits.add("\n");
+		localcommits.add("\n");
+		returncommits.add("\n");
+		assignmentcommits.add("\n");
+		
 		int totalcommit = 1;
 		
 		File res_assign = new File("results/" + project + "/assignments.txt");       
@@ -71,6 +73,7 @@ public class MainClass {
 			int nbReturn = 0;
 			int nbFieldRead = 0;
 			int nbchange = 0;
+			int faulties = 0;
 			
 	        @SuppressWarnings("unused")
 			String branchName = branch.getName();
@@ -85,6 +88,7 @@ public class MainClass {
 	        	boolean returned = false;
 	        	boolean fielded = false;
 	        	boolean localed = false;
+	        	boolean faulty = false;
 	        	
 	        	System.out.println("\n-------------------------------------");
 	        	System.out.println("--- Files of commit n°" + totalcommit + " with ID : " + commit.getName());
@@ -134,7 +138,7 @@ public class MainClass {
     							if (diffspoon.containsAction(rootActions, "Insert", "FieldRead") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
     							{
     								if (!fielded)	{
-    									fieldcommits.add("\n" + commit.getName());
+    									fieldcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
         								nbFieldRead++;
     								}
     								fielded = true;
@@ -144,7 +148,7 @@ public class MainClass {
     							if (diffspoon.containsAction(rootActions, "Insert", "Assignment") || diffspoon.containsAction(rootActions, "Update", "Assignment"))
     							{
     								if (!assigned)	{
-    								assignmentcommits.add("\n" + commit.getName());
+    								assignmentcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
     								nbAssignment++;
     								}
     								assigned = true;
@@ -153,7 +157,7 @@ public class MainClass {
     							if (diffspoon.containsAction(rootActions, "Insert", "Return") || diffspoon.containsAction(rootActions, "Update", "Return"))
     							{
     								if (!returned)	{
-    									returncommits.add("\n" + commit.getName());
+    									returncommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
         								nbReturn++;
     								}
     								returned = true;
@@ -162,7 +166,7 @@ public class MainClass {
     							if (diffspoon.containsAction(rootActions, "Insert", "LocalVariable") || diffspoon.containsAction(rootActions, "Update", "LocalVariable"))
     							{
     								if (!localed)	{
-    									localcommits.add("\n" + commit.getName());
+    									localcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
     									nbLocalVar++;
     								}
     								localed = true;
@@ -175,64 +179,71 @@ public class MainClass {
 
     							catch (NullPointerException e)
     							{
-    								String NPEFaultyFileCurrent = project + "/faulty/npe/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
-    								String NPEFaultyFilePrevious = project + "/faulty/npe/" + commit.getName() + "_previousVersion/" + diff.getOldPath();
+    								String NPEFaultyFileCurrent = "errorfiles/" + project + "/faulty/npe/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String NPEFaultyFilePrevious = "errorfiles/" + project + "/faulty/npe/" + commit.getName() + "_previousVersion/" + diff.getOldPath();
     								File fault_new = new File(NPEFaultyFileCurrent);
     								File fault_old = new File(NPEFaultyFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, previousContent);  								
     								nberrors++;
+    								faulty = true;
     							}
     							catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e)
     							{
-    								String AbortExceptionFaultyFileCurrent = project + "/faulty/abortCompilation/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
-    								String AbortExceptionFaultyFilePrevious = project + "/faulty/abortCompilation/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
+    								String AbortExceptionFaultyFileCurrent = "errorfiles/" + project + "/faulty/abortCompilation/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String AbortExceptionFaultyFilePrevious = "errorfiles/" + project + "/faulty/abortCompilation/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
     								File fault_new = new File(AbortExceptionFaultyFileCurrent);
     								File fault_old = new File(AbortExceptionFaultyFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
+    								faulty = true;
     							}
     							catch (IndexOutOfBoundsException e)
     							{
-    								String OOBExceptionFaultyFileCurrent = project + "/faulty/outOfBounds/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
-    								String OOBExceptionFaultyFilePrevious = project + "/faulty/outOfBounds/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
+    								String OOBExceptionFaultyFileCurrent = "errorfiles/" + project + "/faulty/outOfBounds/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String OOBExceptionFaultyFilePrevious = "errorfiles/" + project + "/faulty/outOfBounds/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
     								File fault_new = new File(OOBExceptionFaultyFileCurrent);
     								File fault_old = new File(OOBExceptionFaultyFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
+    								faulty = true;
     							}
     							catch (spoon.support.reflect.reference.SpoonClassNotFoundException e)
     							{
-    								String SpoonCNFExceptionFaultyFileCurrent = project + "/faulty/spoonCNFException/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
-    								String SpoonCNFExceptionFaultyFilePrevious = project + "/faulty/spoonCNFException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
+    								String SpoonCNFExceptionFaultyFileCurrent = "errorfiles/" + project + "/faulty/spoonCNFException/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String SpoonCNFExceptionFaultyFilePrevious = "errorfiles/" + project + "/faulty/spoonCNFException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
     								File fault_new = new File(SpoonCNFExceptionFaultyFileCurrent);
     								File fault_old = new File(SpoonCNFExceptionFaultyFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
+    								faulty = true;
     							}
     							catch (java.lang.RuntimeException e)
     							{
-    								String TypeBindingUnknowFaultyFileCurrent = project + "/faulty/typeBindingException/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
-    								String TypeBindingUnknowFaultyFilePrevious = project + "/faulty/typeBindingException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
+    								String TypeBindingUnknowFaultyFileCurrent = "errorfiles/" + project + "/faulty/typeBindingException/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String TypeBindingUnknowFaultyFilePrevious = "errorfiles/" + project + "/faulty/typeBindingException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
     								File fault_new = new File(TypeBindingUnknowFaultyFileCurrent);
     								File fault_old = new File(TypeBindingUnknowFaultyFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;
+    								faulty = true;
     							}
     						} 				
     					}
     				}
+	    		if (faulty)
+	    			faulties++;
 	        	}
 	        }
 		
 
         System.out.println(nberrors + " errors");
         System.out.println(nbcommit + " commits");
-        System.out.println(nbchange + " total changes");
+        System.out.println(faulties + " commits with errors");
         System.out.println("_-_-_-_-_-_-_-_-_-_-_-");
 		System.out.println(nbAssignment + " updates or insert of assignments");
 		System.out.println(nbLocalVar + " updates or insert of local variables ");
