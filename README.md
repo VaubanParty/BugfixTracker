@@ -77,7 +77,12 @@ Interesting observations have been made while running this algorithm on Elastic 
 found no less than 30 025 commits, while both Git command and online Git repository show a number around 17 000.
 It is not related to the branches, as the sum of all their commits is way more than 30 000, in addition to the
 fact that this code only runs on local content. Strange.
-If anyone find some reason for this behavior, feel free to contact me:
+More strange, this looks like it is a natural behavior: all the programs are showing more commits that the Git
+command or remote repository. This is not natural, there is maybe a way that it also takes merges into account,
+making this really hard to get.
+
+If anyone find some reason for this behavior, with their knowledge of (JGit)[https://github.com/eclipse/jgit],
+feel free to contact me; I would be glad to discuss about it:
 	yassine.badache@gmail.com
 	
 	

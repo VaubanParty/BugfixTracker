@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "mahout";
+	static String project = "aries";
 	
 	static String projectOwner = "apache";
 	
