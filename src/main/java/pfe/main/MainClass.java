@@ -28,9 +28,9 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "facebook-android-sdk";
+	static String project = "qpid-proton";
 	
-	static String projectOwner = "facebook";
+	static String projectOwner = "apache";
 	
 	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
