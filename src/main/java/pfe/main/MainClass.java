@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "aries";
+	static String project = "openjpa";
 	
 	static String projectOwner = "apache";
 	
