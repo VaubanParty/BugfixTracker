@@ -57,10 +57,10 @@ public class MainClass {
 		
 		int totalcommit = 1;
 		
-		File res_assign = new File("results/" + project + "/assignments.txt");       
-		File res_local = new File("results/" + project + "/localvar.txt");
-		File res_return = new File("results/" + project + "/return.txt");
-		File res_field = new File("results/" + project + "/fieldread.txt");
+		File res_assign = new File("results/" + project + "/assignments.md");       
+		File res_local = new File("results/" + project + "/localvar.md");
+		File res_return = new File("results/" + project + "/return.md");
+		File res_field = new File("results/" + project + "/fieldread.md");
 		
 		
 		List<Ref> branches = git.branchList().call();
