@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "bugfixRepoSamples/mahout";
+	static String project = "bugfixRepoSamples/elasticsearch";
 	
 	static String directoryPath = "../" + project + "/.git";
 	

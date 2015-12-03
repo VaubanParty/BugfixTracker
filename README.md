@@ -70,7 +70,15 @@ Xavier Blanc, Matias Martinez, Martin Monperrus), In Proceedings of the Internat
 Automated Software Engineering, 2014.
 
 
+
 Misc
 ----
-
-Yes, I can't use Markdown correctly. Yet.
+Interesting observations have been made while running this algorithm on Elastic Search. Indeed, the algorithm
+found no less than 30 025 commits, while both Git command and online Git repository show a number around 17 000.
+It is not related to the branches, as the sum of all their commits is way more than 30 000, in addition to the
+fact that this code only runs on local content. Strange.
+If anyone find some reason for this behavior, feel free to contact me:
+	yassine.badache@gmail.com
+	
+	
+And yes, I can't use Markdown correctly. Yet.
