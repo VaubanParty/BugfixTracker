@@ -28,9 +28,9 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "openjpa";
+	static String project = "atmosphere";
 	
-	static String projectOwner = "apache";
+	static String projectOwner = "Atmosphere";
 	
 	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
@@ -55,7 +55,7 @@ public class MainClass {
 		returncommits.add("\n");
 		assignmentcommits.add("\n");
 		
-		int totalcommit = 1;
+		int totalcommit = 0;
 		
 		File res_assign = new File("results/" + project + "/assignments.md");       
 		File res_local = new File("results/" + project + "/localvar.md");
@@ -72,7 +72,6 @@ public class MainClass {
 			int nbLocalVar = 0;
 			int nbReturn = 0;
 			int nbFieldRead = 0;
-			int nbchange = 0;
 			int faulties = 0;
 			
 	        @SuppressWarnings("unused")
@@ -90,11 +89,12 @@ public class MainClass {
 	        	boolean localed = false;
 	        	boolean faulty = false;
 	        	
-	        	System.out.println("\n-------------------------------------");
-	        	System.out.println("--- Files of commit n°" + totalcommit + " with ID : " + commit.getName());
-		        System.out.println("-------------------------------------");
 	        	nbcommit++;
 	        	totalcommit++;
+	        	System.out.println("\n-------------------------------------");
+	        	System.out.println("--- Files of commit n°" + nbcommit + " with ID : " + commit.getName());
+		        System.out.println("-------------------------------------");
+	        	
 	        	
 	        	if (commit.getParentCount() > 0)	{
 	            RevCommit targetCommit = rw.parseCommit(repository.resolve(
@@ -243,6 +243,7 @@ public class MainClass {
 
         System.out.println(nberrors + " errors");
         System.out.println(nbcommit + " commits");
+        System.out.println(totalcommit + " total commits");
         System.out.println(faulties + " commits with errors");
         System.out.println("_-_-_-_-_-_-_-_-_-_-_-");
 		System.out.println(nbAssignment + " updates or insert of assignments");
