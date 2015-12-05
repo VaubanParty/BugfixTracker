@@ -28,9 +28,9 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "netty";
+	static String project = "derby";
 	
-	static String projectOwner = "netty";
+	static String projectOwner = "apache";
 	
 	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
@@ -73,6 +73,10 @@ public class MainClass {
 			int nbReturn = 0;
 			int nbFieldRead = 0;
 			int faulties = 0;
+			float returnpercent = 0;
+			float assignpercent = 0;
+			float fieldpercent = 0;
+			float localpercent = 0;
 			
 	        @SuppressWarnings("unused")
 			String branchName = branch.getName();
@@ -240,16 +244,20 @@ public class MainClass {
 	        	}
 	        }
 		
+	    assignpercent = (nbAssignment / totalcommit) * 100;
+	    returnpercent = (nbReturn / totalcommit) * 100;
+	    localpercent = (nbLocalVar / totalcommit) * 100;
+	    fieldpercent = (nbFieldRead / totalcommit) * 100;
 
         System.out.println(nberrors + " errors");
         System.out.println(nbcommit + " commits");
         System.out.println(totalcommit + " total commits");
         System.out.println(faulties + " commits with errors");
         System.out.println("_-_-_-_-_-_-_-_-_-_-_-");
-		System.out.println(nbAssignment + " updates or insert of assignments");
-		System.out.println(nbLocalVar + " updates or insert of local variables ");
-		System.out.println(nbReturn + " updates or insert of returns");
-		System.out.println(nbFieldRead + " updates or insert of field reads");
+		System.out.println(nbAssignment + " updates or insert of assignments (" + assignpercent + "%)");
+		System.out.println(nbLocalVar + " updates or insert of local variables (" + localpercent + "%)");
+		System.out.println(nbReturn + " updates or insert of returns (" + returnpercent + "%)");
+		System.out.println(nbFieldRead + " updates or insert of field reads (" + fieldpercent + "%)");
 		
 		
 		 FileUtils.writeStringToFile(res_assign, assignmentcommits.toString());
