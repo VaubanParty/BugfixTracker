@@ -28,9 +28,9 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "atmosphere";
+	static String project = "netty";
 	
-	static String projectOwner = "Atmosphere";
+	static String projectOwner = "netty";
 	
 	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
@@ -39,11 +39,11 @@ public class MainClass {
 		
 		Repository repository = bftUtils.setRepository(directoryPath);
 		
-		diffspoonTry(repository);
+		diffOnallCommits(repository);
 	}
 	
 	
-	public static void diffspoonTry (Repository repository) throws Exception	{
+	public static void diffOnallCommits (Repository repository) throws Exception	{
 		Git git = new Git (repository);
 		RevWalk rw = new RevWalk(repository);
 		List<String> fieldcommits = new ArrayList<String>();
