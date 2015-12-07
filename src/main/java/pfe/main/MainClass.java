@@ -28,7 +28,7 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "derby";
+	static String project = "lucene-solr";
 	
 	static String projectOwner = "apache";
 	
@@ -231,6 +231,17 @@ public class MainClass {
     								String TypeBindingUnknowFaultyFilePrevious = "errorfiles/" + project + "/faulty/typeBindingException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
     								File fault_new = new File(TypeBindingUnknowFaultyFileCurrent);
     								File fault_old = new File(TypeBindingUnknowFaultyFilePrevious);
+    								FileUtils.writeStringToFile(fault_new, currentContent);
+    								FileUtils.writeStringToFile(fault_old, currentContent);
+    								nberrors++;
+    								faulty = true;
+    							}
+    							catch (java.lang.StackOverflowError e)
+    							{
+    								String StackOverflowFileCurrent = "errorfiles/" + project + "/faulty/typeBindingException/" + commit.getName() + "_currentVersion/" + diff.getNewPath();
+    								String StackOverflowFilePrevious = "errorfiles/" + project + "/faulty/typeBindingException/" + commit.getName() + "_previousVersion/" + diff.getNewPath();
+    								File fault_new = new File(StackOverflowFileCurrent);
+    								File fault_old = new File(StackOverflowFilePrevious);
     								FileUtils.writeStringToFile(fault_new, currentContent);
     								FileUtils.writeStringToFile(fault_old, currentContent);
     								nberrors++;

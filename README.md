@@ -37,6 +37,8 @@ Spoon or detecting failures. Five errors are actually caught:
    - RuntimeException
    		
 [02/12/2015] Experimentations began.
+
+[07/12/2015] Added StackOverflowException to the error list.
     
     
     
