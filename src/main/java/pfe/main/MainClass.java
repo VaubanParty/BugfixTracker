@@ -28,9 +28,9 @@ public class MainClass {
 	
 	static BugfixTrackerUtils bftUtils = new BugfixTrackerUtils();
 	
-	static String project = "lucene-solr";
+	static String project = "netty";
 	
-	static String projectOwner = "apache";
+	static String projectOwner = "netty";
 	
 	static String directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 	
@@ -139,7 +139,7 @@ public class MainClass {
     							List<Action> rootActions = result.getRootActions();
     							
     							// update / insert
-    							if (diffspoon.containsAction(rootActions, "Insert", "FieldRead") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
+    							if (diffspoon.containsAction(rootActions, "Insert", "FieldWrite") || diffspoon.containsAction(rootActions, "Update", "FieldRead"))
     							{
     								if (!fielded)	{
     									fieldcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
@@ -268,7 +268,7 @@ public class MainClass {
 		System.out.println(nbAssignment + " updates or insert of assignments (" + assignpercent + "%)");
 		System.out.println(nbLocalVar + " updates or insert of local variables (" + localpercent + "%)");
 		System.out.println(nbReturn + " updates or insert of returns (" + returnpercent + "%)");
-		System.out.println(nbFieldRead + " updates or insert of field reads (" + fieldpercent + "%)");
+		System.out.println(nbFieldRead + " updates or insert of field written (" + fieldpercent + "%)");
 		
 		
 		 FileUtils.writeStringToFile(res_assign, assignmentcommits.toString());
