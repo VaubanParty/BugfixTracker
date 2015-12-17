@@ -13,10 +13,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
-import com.github.gumtreediff.actions.model.Action;
-
 import fr.inria.sacha.spoon.diffSpoon.CtDiff;
 import fr.inria.sacha.spoon.diffSpoon.DiffSpoon;
+import fr.inria.sacha.spoon.diffSpoon.DiffSpoonImpl;
 
 /**
  * 
@@ -121,22 +120,17 @@ public class BugfixTracker {
 
 							if (f1 != null && f2 != null) {
 								try {
-									DiffSpoon diffspoon = new DiffSpoon(true);
+									DiffSpoon diffspoon = new DiffSpoonImpl();
 
 									CtDiff result = diffspoon.compare(f1, f2);
 
 									f1.delete();
 									f2.delete();
 
-									List<Action> rootActions = result
-											.getRootActions();
-
 									System.out.println(result.toString());
 									// update / insert
-									if (diffspoon.containsAction(rootActions,
-											"Insert", "FieldWrite")
-											|| diffspoon.containsAction(
-													rootActions, "Update",
+									if (result.containsAction("Insert", "FieldWrite")
+											|| result.containsAction("Update",
 													"FieldRead")) {
 										if (!fielded) {
 											resultsHolder.add("FieldWrite",
@@ -147,10 +141,8 @@ public class BugfixTracker {
 
 									}
 
-									if (diffspoon.containsAction(rootActions,
-											"Insert", "Assignment")
-											|| diffspoon.containsAction(
-													rootActions, "Update",
+									if (result.containsAction("Insert", "Assignment")
+											|| result.containsAction("Update",
 													"Assignment")) {
 										if (!assigned) {
 											resultsHolder.add("Assignment",
@@ -160,10 +152,8 @@ public class BugfixTracker {
 										assigned = true;
 									}
 
-									if (diffspoon.containsAction(rootActions,
-											"Insert", "Return")
-											|| diffspoon.containsAction(
-													rootActions, "Update",
+									if (result.containsAction("Insert", "Return")
+											|| result.containsAction("Update",
 													"Return")) {
 										if (!returned) {
 											resultsHolder.add("Return", commit);
@@ -172,10 +162,8 @@ public class BugfixTracker {
 										returned = true;
 									}
 
-									if (diffspoon.containsAction(rootActions,
-											"Insert", "LocalVariable")
-											|| diffspoon.containsAction(
-													rootActions, "Update",
+									if (result.containsAction("Insert", "LocalVariable")
+											|| result.containsAction("Update",
 													"LocalVariable")) {
 										if (!localed) {
 											resultsHolder.add("LocalVariable",
@@ -218,5 +206,81 @@ public class BugfixTracker {
 			statsHolder.printResults();
 			resultsHolder.saveResults();
 		}
+	}
+
+	
+	/* Getters and setters
+	 * Below this point
+	 * */
+	public BugfixTrackerUtils getBugfixUtils() {
+		return bugfixUtils;
+	}
+
+	public void setBugfixUtils(BugfixTrackerUtils bugfixUtils) {
+		this.bugfixUtils = bugfixUtils;
+	}
+
+	public DataStatsHolder getStatsHolder() {
+		return statsHolder;
+	}
+
+	public void setStatsHolder(DataStatsHolder statsHolder) {
+		this.statsHolder = statsHolder;
+	}
+
+	public DataResultsHolder getResultsHolder() {
+		return resultsHolder;
+	}
+
+	public void setResultsHolder(DataResultsHolder resultsHolder) {
+		this.resultsHolder = resultsHolder;
+	}
+
+	public String getProject() {
+		return project;
+	}
+
+	public void setProject(String project) {
+		this.project = project;
+	}
+
+	public String getProjectOwner() {
+		return projectOwner;
+	}
+
+	public void setProjectOwner(String projectOwner) {
+		this.projectOwner = projectOwner;
+	}
+
+	public String getDirectoryPath() {
+		return directoryPath;
+	}
+
+	public void setDirectoryPath(String directoryPath) {
+		this.directoryPath = directoryPath;
+	}
+
+	public Repository getRepository() {
+		return repository;
+	}
+
+	public void setRepository(Repository repository) {
+		this.repository = repository;
+	}
+
+	public Git getGit() {
+		return git;
+	}
+
+	public void setGit(Git git) {
+		this.git = git;
+	}
+
+	public RevWalk getRw() {
+		return rw;
+	}
+
+	public void setRw(RevWalk rw) {
+		this.rw = rw;
 	}
 }

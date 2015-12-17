@@ -1,0 +1,17 @@
+[
+, [4e2152c21955480694a86d9ac8e83b3cd29e92ca](https://github.com/pagsegura/java/commit/4e2152c21955480694a86d9ac8e83b3cd29e92ca)
+, [f82a9f426d755c71cb3e41454b6073253136f80c](https://github.com/pagsegura/java/commit/f82a9f426d755c71cb3e41454b6073253136f80c)
+, [c3d158065e9e22aaa58b1c4c98cc3271b7668ccb](https://github.com/pagsegura/java/commit/c3d158065e9e22aaa58b1c4c98cc3271b7668ccb)
+, [2d7f4df882d00e246026796ff31ea86e3bf303b1](https://github.com/pagsegura/java/commit/2d7f4df882d00e246026796ff31ea86e3bf303b1)
+, [d0fbd0b3dd44aad732ad84f5c149fcb3478f8676](https://github.com/pagsegura/java/commit/d0fbd0b3dd44aad732ad84f5c149fcb3478f8676)
+, [b84dcd36a32e829b39e990a50fd8a3656b22b6bd](https://github.com/pagsegura/java/commit/b84dcd36a32e829b39e990a50fd8a3656b22b6bd)
+, [c140f0d3f5840f29bbc1683b1067a50499940d85](https://github.com/pagsegura/java/commit/c140f0d3f5840f29bbc1683b1067a50499940d85)
+, [2f2550c25ebff71b797e615f772b5ef7920aa89e](https://github.com/pagsegura/java/commit/2f2550c25ebff71b797e615f772b5ef7920aa89e)
+, [5f3e89d5fbd3d42b31c4426bcb184f1c61ea75e0](https://github.com/pagsegura/java/commit/5f3e89d5fbd3d42b31c4426bcb184f1c61ea75e0)
+, [9f23c0db8b17dd84a13f72ddc09076808638988d](https://github.com/pagsegura/java/commit/9f23c0db8b17dd84a13f72ddc09076808638988d)
+, [5d7850e998f6c70949aa2390b996c4b593e3057e](https://github.com/pagsegura/java/commit/5d7850e998f6c70949aa2390b996c4b593e3057e)
+, [01f651f4ec2b1f37f0c04610074bde97e3127d23](https://github.com/pagsegura/java/commit/01f651f4ec2b1f37f0c04610074bde97e3127d23)
+, [f47efa5599ca0c6059f01a3f9afab8dad02001e9](https://github.com/pagsegura/java/commit/f47efa5599ca0c6059f01a3f9afab8dad02001e9)
+, [d0531920dba8527171f0a9d92eac25b7cc613a96](https://github.com/pagsegura/java/commit/d0531920dba8527171f0a9d92eac25b7cc613a96)
+, [41c5d6ee011bdcc9032a4240b2673672e90823fa](https://github.com/pagsegura/java/commit/41c5d6ee011bdcc9032a4240b2673672e90823fa)
+]
