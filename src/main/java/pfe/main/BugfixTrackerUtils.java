@@ -24,8 +24,7 @@ public class BugfixTrackerUtils {
 
 		RepositoryBuilder builder = new RepositoryBuilder();
 		Repository repository;
-		repository = builder.setGitDir(gitDir).readEnvironment().findGitDir()
-				.build();
+		repository = builder.setGitDir(gitDir).readEnvironment().findGitDir().build();
 
 		return repository;
 	}
@@ -38,20 +37,15 @@ public class BugfixTrackerUtils {
 		return git.branchList().call();
 	}
 
-	public File writeContentInFile(String name, String content)
-			throws IOException {
+	public File writeContentInFile(String name, String content) throws IOException {
 		File f = new File(name);
 		FileUtils.writeStringToFile(f, content);
 
 		return f;
 	}
 
-	public String[] getContent(Repository repository, DiffEntry diff,
-			RevCommit commit) {
-		return new String[] {
-				BlobUtils.getContent(repository, commit.getId(),
-						diff.getNewPath()),
-				BlobUtils.getContent(repository, commit.getParent(0).getId(),
-						diff.getOldPath()) };
+	public String[] getContent(Repository repository, DiffEntry diff, RevCommit commit) {
+		return new String[] { BlobUtils.getContent(repository, commit.getId(), diff.getNewPath()),
+				BlobUtils.getContent(repository, commit.getParent(0).getId(), diff.getOldPath()) };
 	}
 }

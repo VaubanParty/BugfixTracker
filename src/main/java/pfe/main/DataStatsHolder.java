@@ -32,6 +32,14 @@ public class DataStatsHolder {
 	/** Number of commits that contain an error file diff */
 	private int nbCommitsWithError;
 
+	private int nbAssignmentOnlyOne;
+
+	private int nbLocalVarOnlyOne;
+
+	private int nbReturnOnlyOne;
+
+	private int nbFieldWriteOnlyOne;
+
 	private String errorString;
 
 	/**
@@ -46,6 +54,11 @@ public class DataStatsHolder {
 		nbAssignment = 0;
 		nbLocalVar = 0;
 		nbReturn = 0;
+
+		nbFieldWriteOnlyOne = 0;
+		nbAssignmentOnlyOne = 0;
+		nbLocalVarOnlyOne = 0;
+		nbReturnOnlyOne = 0;
 
 		errorString = "";
 	}
@@ -89,17 +102,46 @@ public class DataStatsHolder {
 
 	}
 
+	public void incrementOnlyOne(String variableToIncrement) {
+		errorString = "";
+
+		switch (variableToIncrement) {
+		case ("Assignment"):
+			nbAssignmentOnlyOne++;
+		break;
+
+		case ("LocalVariable"):
+			nbLocalVarOnlyOne++;
+		break;
+
+		case ("Return"):
+			nbReturnOnlyOne++;
+		break;
+
+		case ("FieldWrite"):
+			nbFieldWriteOnlyOne++;
+		break;
+
+		default:
+			errorString = "non-existent";
+			break;
+		}
+	}
+
 	public void printResults() {
 		System.out.println(nbFileErrors + " files with errors (=not treated)");
 		System.out.println(nbCommits + " commits");
 		System.out.println(nbCommitsWithError + " commits with errors");
-		System.out.println("_-_-_-_-_-_-_-_-_-_-_-");
+		System.out.println("\n****************************\n");
 		System.out.println(nbAssignment + " updates or insert of assignments");
-		System.out
-		.println(nbLocalVar + " updates or insert of local variables");
+		System.out.println(nbLocalVar + " updates or insert of local variables");
 		System.out.println(nbReturn + " updates or insert of returns");
-		System.out
-		.println(nbFieldWrite + " updates or insert of field written");
+		System.out.println(nbFieldWrite + " updates or insert of field written");
+		System.out.println("\n****************************\n");
+		System.out.println(nbAssignmentOnlyOne + " commits with ONLY ONE assignment");
+		System.out.println(nbLocalVarOnlyOne + " commits with ONLY ONE local variables");
+		System.out.println(nbReturnOnlyOne + " commits with ONLY ONE returns");
+		System.out.println(nbFieldWriteOnlyOne + " commits with ONLY ONE field written");
 
 	}
 

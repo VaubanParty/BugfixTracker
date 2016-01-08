@@ -29,27 +29,39 @@ import fr.inria.sacha.spoon.diffSpoon.DiffSpoonImpl;
  */
 public class BugfixTracker {
 
+	/** Various methods encapsulating methods to treats Git and commits datas */
 	private BugfixTrackerUtils bugfixUtils;
 
+	/** All the statistical datas (number of faulty commit, actions, etc) */
 	private DataStatsHolder statsHolder;
 
+	/** File managing object for tables */
 	private DataResultsHolder resultsHolder;
 
+	/** Name of the project */
 	private String project;
 
+	/** Owner of the project (necessary for Markdown parsing) */
 	private String projectOwner;
 
+	/** Path to the directory */
 	private String directoryPath;
 
+	/** Repository object, representing the directory */
 	private Repository repository;
 
+	/** Git entity to treat with the Repository datas */
 	private Git git;
 
+	/** Revision walker from JGit */
 	private RevWalk rw;
 
+	/** Classic constructor */
 	public BugfixTracker(String[] args) throws Exception {
 		projectOwner = args[0];
 		project = args[1];
+
+		// TODO: Make this user-friendly
 		directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 
 		bugfixUtils = new BugfixTrackerUtils();
@@ -61,10 +73,12 @@ public class BugfixTracker {
 		rw = new RevWalk(repository);
 	}
 
+	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
 
 		List<Ref> branches = bugfixUtils.getAllBranches(git);
 
+		/** Goes through every branch available on your local repository */
 		for (Ref branch : branches) {
 
 			@SuppressWarnings("unused")
@@ -75,48 +89,41 @@ public class BugfixTracker {
 
 			Iterable<RevCommit> commits = bugfixUtils.getAllCommits(git);
 
+			/** Goes through every commit of a given branch */
 			for (RevCommit commit : commits) {
 				boolean assigned = false;
 				boolean returned = false;
 				boolean fielded = false;
 				boolean localed = false;
+				int nbchanges = 0;
+				String action = "";
 				boolean faulty = false;
 
 				statsHolder.increment("commit");
 				System.out.println("\n-------------------------------------");
-				System.out.println("--- Files of commit n°"
-						+ statsHolder.getNbCommits() + " with ID : "
-						+ commit.getName());
+				System.out.println("--- Files of commit n°" + statsHolder.getNbCommits() + " with ID : " + commit.getName());
 				System.out.println("-------------------------------------");
 
 				if (commit.getParentCount() > 0) {
-					RevCommit targetCommit = rw.parseCommit(repository
-							.resolve(commit.getName()));
+					RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
 
-					RevCommit targetParent = rw.parseCommit(commit.getParent(0)
-							.getId());
+					RevCommit targetParent = rw.parseCommit(commit.getParent(0).getId());
 
-					DiffFormatter df = new DiffFormatter(
-							DisabledOutputStream.INSTANCE);
+					DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 
 					df.setRepository(repository);
 					df.setDiffComparator(RawTextComparator.DEFAULT);
 					df.setDetectRenames(true);
 
-					List<DiffEntry> diffs = df.scan(targetParent.getTree(),
-							targetCommit.getTree());
+					List<DiffEntry> diffs = df.scan(targetParent.getTree(), targetCommit.getTree());
 
 					for (DiffEntry diff : diffs) {
-						String currentContent = bugfixUtils.getContent(
-								repository, diff, commit)[0];
-						String previousContent = bugfixUtils.getContent(
-								repository, diff, commit)[1];
+						String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
+						String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
 
 						if (diff.getNewPath().contains(".java")) {
-							File f1 = bugfixUtils.writeContentInFile("c1.java",
-									currentContent);
-							File f2 = bugfixUtils.writeContentInFile("c2.java",
-									previousContent);
+							File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
+							File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
 
 							if (f1 != null && f2 != null) {
 								try {
@@ -127,53 +134,57 @@ public class BugfixTracker {
 									f1.delete();
 									f2.delete();
 
-									System.out.println(result.toString());
-									// update / insert
-									if (result.containsAction("Insert", "FieldWrite")
-											|| result.containsAction("Update",
-													"FieldRead")) {
+									/*
+									 * First checking : if it contains an
+									 * indicated action
+									 */
+									if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
 										if (!fielded) {
-											resultsHolder.add("FieldWrite",
-													commit);
+											resultsHolder.add("FieldWrite", commit);
 											statsHolder.increment("Fieldwrite");
 										}
 										fielded = true;
 
+										nbchanges++;
+										action = "FieldWrite";
+										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
-									if (result.containsAction("Insert", "Assignment")
-											|| result.containsAction("Update",
-													"Assignment")) {
+									if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
 										if (!assigned) {
-											resultsHolder.add("Assignment",
-													commit);
+											resultsHolder.add("Assignment", commit);
 											statsHolder.increment("Assignment");
 										}
 										assigned = true;
+
+										nbchanges++;
+										action = "Assignment";
+										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
-									if (result.containsAction("Insert", "Return")
-											|| result.containsAction("Update",
-													"Return")) {
+									if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
 										if (!returned) {
 											resultsHolder.add("Return", commit);
 											statsHolder.increment("Return");
 										}
 										returned = true;
+
+										nbchanges++;
+										action = "Return";
+										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
-									if (result.containsAction("Insert", "LocalVariable")
-											|| result.containsAction("Update",
-													"LocalVariable")) {
+									if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
 										if (!localed) {
-											resultsHolder.add("LocalVariable",
-													commit);
-											statsHolder
-											.increment("LocalVariable");
+											resultsHolder.add("LocalVariable", commit);
+											statsHolder.increment("LocalVariable");
 										}
 										localed = true;
-									}
 
+										nbchanges++;
+										action = "LocalVariable";
+										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+									}
 								}
 
 								catch (NullPointerException e) {
@@ -200,6 +211,15 @@ public class BugfixTracker {
 					}
 					if (faulty)
 						statsHolder.increment("commit_error");
+
+					if (nbchanges == 1) {
+						System.out.println("So we reached once !");
+						resultsHolder.addOneOnly(action, commit);
+						statsHolder.incrementOnlyOne(action);
+
+						nbchanges = 0;
+						action = "";
+					}
 				}
 			}
 
@@ -208,10 +228,9 @@ public class BugfixTracker {
 		}
 	}
 
-	
-	/* Getters and setters
-	 * Below this point
-	 * */
+	/*
+	 * Getters and setters Below this point
+	 */
 	public BugfixTrackerUtils getBugfixUtils() {
 		return bugfixUtils;
 	}
