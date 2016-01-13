@@ -1,6 +1,8 @@
 package pfe.main;
 
 import java.io.File;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -225,6 +227,135 @@ public class BugfixTracker {
 
 			statsHolder.printResults();
 			resultsHolder.saveResults();
+		}
+	}
+
+	public void probeFileCommit(String filepath) throws Exception {
+		boolean assigned = false;
+		boolean returned = false;
+		boolean fielded = false;
+		boolean localed = false;
+		int nbchanges = 0;
+		String action = "";
+		boolean faulty = false;
+
+		for (String line : Files.readAllLines(Paths.get("filepath"))) {
+			String[] parts = line.split(",");
+
+			RevCommit bf_sha = rw.parseCommit(repository.resolve(parts[0]));
+			RevCommit bi_sha = rw.parseCommit(repository.resolve(parts[1]));
+
+			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+
+			df.setRepository(repository);
+			df.setDiffComparator(RawTextComparator.DEFAULT);
+			df.setDetectRenames(true);
+
+			List<DiffEntry> diffs = df.scan(bf_sha.getTree(), bi_sha.getTree());
+
+			for (DiffEntry diff : diffs) {
+				String currentContent = bugfixUtils.getContent(repository, diff, bf_sha)[0];
+				String previousContent = bugfixUtils.getContent(repository, diff, bi_sha)[0];
+
+				if (diff.getNewPath().contains(".java")) {
+					File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
+					File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+
+					if (f1 != null && f2 != null) {
+						try {
+							DiffSpoon diffspoon = new DiffSpoonImpl();
+
+							CtDiff result = diffspoon.compare(f1, f2);
+
+							f1.delete();
+							f2.delete();
+
+							/*
+							 * First checking : if it contains an indicated
+							 * action
+							 */
+							if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
+								if (!fielded) {
+									resultsHolder.add("FieldWrite", bf_sha);
+									statsHolder.increment("Fieldwrite");
+								}
+								fielded = true;
+
+								nbchanges++;
+								action = "FieldWrite";
+								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+							}
+
+							if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
+								if (!assigned) {
+									resultsHolder.add("Assignment", bf_sha);
+									statsHolder.increment("Assignment");
+								}
+								assigned = true;
+
+								nbchanges++;
+								action = "Assignment";
+								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+							}
+
+							if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
+								if (!returned) {
+									resultsHolder.add("Return", bf_sha);
+									statsHolder.increment("Return");
+								}
+								returned = true;
+
+								nbchanges++;
+								action = "Return";
+								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+							}
+
+							if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
+								if (!localed) {
+									resultsHolder.add("LocalVariable", bf_sha);
+									statsHolder.increment("LocalVariable");
+								}
+								localed = true;
+
+								nbchanges++;
+								action = "LocalVariable";
+								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+							}
+						}
+
+						catch (NullPointerException e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						} catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						} catch (IndexOutOfBoundsException e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						} catch (spoon.support.reflect.reference.SpoonClassNotFoundException e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						} catch (java.lang.RuntimeException e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						} catch (java.lang.StackOverflowError e) {
+							statsHolder.increment("file_error");
+							faulty = true;
+						}
+					}
+				}
+			}
+			if (faulty)
+				statsHolder.increment("commit_error");
+
+			if (nbchanges == 1) {
+				System.out.println("So we reached once !");
+				resultsHolder.addOneOnly(action, bf_sha);
+				statsHolder.incrementOnlyOne(action);
+
+				nbchanges = 0;
+				action = "";
+			}
 		}
 	}
 
