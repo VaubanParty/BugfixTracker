@@ -68,8 +68,6 @@ public class BugfixTracker {
 
 		bugfixUtils = new BugfixTrackerUtils();
 		statsHolder = new DataStatsHolder();
-		resultsHolder = new DataResultsHolder(project, projectOwner);
-
 		repository = bugfixUtils.setRepository(directoryPath);
 		git = new Git(repository);
 		rw = new RevWalk(repository);
@@ -77,6 +75,7 @@ public class BugfixTracker {
 
 	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
+		resultsHolder = new DataResultsHolder(project, projectOwner);
 
 		List<Ref> branches = bugfixUtils.getAllBranches(git);
 
@@ -143,13 +142,12 @@ public class BugfixTracker {
 									if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
 										if (!fielded) {
 											resultsHolder.add("FieldWrite", commit);
-											statsHolder.increment("Fieldwrite");
+											statsHolder.increment("FieldWrite");
 										}
 										fielded = true;
 
 										nbchanges++;
 										action = "FieldWrite";
-										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
 									if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
@@ -161,7 +159,6 @@ public class BugfixTracker {
 
 										nbchanges++;
 										action = "Assignment";
-										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
 									if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
@@ -173,7 +170,6 @@ public class BugfixTracker {
 
 										nbchanges++;
 										action = "Return";
-										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 
 									if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
@@ -185,7 +181,6 @@ public class BugfixTracker {
 
 										nbchanges++;
 										action = "LocalVariable";
-										System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 									}
 								}
 
@@ -215,7 +210,6 @@ public class BugfixTracker {
 						statsHolder.increment("commit_error");
 
 					if (nbchanges == 1) {
-						System.out.println("So we reached once !");
 						resultsHolder.addOneOnly(action, commit);
 						statsHolder.incrementOnlyOne(action);
 
@@ -223,14 +217,19 @@ public class BugfixTracker {
 						action = "";
 					}
 				}
+				nbchanges = 0;
 			}
 
 			statsHolder.printResults();
 			resultsHolder.saveResults();
+
+			statsHolder.reset();
 		}
 	}
 
-	public void probeFileCommit(String filepath) throws Exception {
+	public void probeOddCodeCommit(String filepath) throws Exception {
+		resultsHolder = new DataResultsHolder(project + "/odd-code/", projectOwner);
+
 		boolean assigned = false;
 		boolean returned = false;
 		boolean fielded = false;
@@ -239,8 +238,12 @@ public class BugfixTracker {
 		String action = "";
 		boolean faulty = false;
 
-		for (String line : Files.readAllLines(Paths.get("filepath"))) {
+		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
 			String[] parts = line.split(",");
+
+			System.out.println("\n-------------------------------------");
+			System.out.println("--- Files of commit " + parts[0]);
+			System.out.println("-------------------------------------");
 
 			RevCommit bf_sha = rw.parseCommit(repository.resolve(parts[0]));
 			RevCommit bi_sha = rw.parseCommit(repository.resolve(parts[1]));
@@ -295,7 +298,6 @@ public class BugfixTracker {
 
 								nbchanges++;
 								action = "Assignment";
-								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 							}
 
 							if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
@@ -307,7 +309,6 @@ public class BugfixTracker {
 
 								nbchanges++;
 								action = "Return";
-								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 							}
 
 							if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
@@ -319,7 +320,6 @@ public class BugfixTracker {
 
 								nbchanges++;
 								action = "LocalVariable";
-								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
 							}
 						}
 
@@ -356,6 +356,150 @@ public class BugfixTracker {
 				nbchanges = 0;
 				action = "";
 			}
+		}
+		nbchanges = 0;
+
+		statsHolder.printResults();
+		resultsHolder.saveResults();
+
+		statsHolder.reset();
+	}
+
+	public void probeFileCommit(String filepath) throws Exception {
+		resultsHolder = new DataResultsHolder(project + "/commitpaper/", projectOwner);
+
+		boolean assigned = false;
+		boolean returned = false;
+		boolean fielded = false;
+		boolean localed = false;
+		int nbchanges = 0;
+		String action = "";
+		boolean faulty = false;
+
+		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
+			System.out.println("\n-------------------------------------");
+			System.out.println("--- Files of commit " + line);
+			System.out.println("-------------------------------------");
+
+			RevCommit commit = rw.parseCommit(repository.resolve(line));
+
+			if (commit.getParentCount() > 0) {
+				RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
+
+				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+
+				df.setRepository(repository);
+				df.setDiffComparator(RawTextComparator.DEFAULT);
+				df.setDetectRenames(true);
+
+				List<DiffEntry> diffs = df.scan(commit.getTree(), parent.getTree());
+
+				for (DiffEntry diff : diffs) {
+					String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
+					String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+
+					if (diff.getNewPath().contains(".java")) {
+						File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
+						File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+
+						if (f1 != null && f2 != null) {
+							try {
+								DiffSpoon diffspoon = new DiffSpoonImpl();
+
+								CtDiff result = diffspoon.compare(f1, f2);
+
+								f1.delete();
+								f2.delete();
+
+								/*
+								 * First checking : if it contains an indicated
+								 * action
+								 */
+								if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
+									if (!fielded) {
+										resultsHolder.add("FieldWrite", commit);
+										statsHolder.increment("Fieldwrite");
+									}
+									fielded = true;
+
+									nbchanges++;
+									action = "FieldWrite";
+									System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+								}
+
+								if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
+									if (!assigned) {
+										resultsHolder.add("Assignment", commit);
+										statsHolder.increment("Assignment");
+									}
+									assigned = true;
+
+									nbchanges++;
+									action = "Assignment";
+								}
+
+								if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
+									if (!returned) {
+										resultsHolder.add("Return", commit);
+										statsHolder.increment("Return");
+									}
+									returned = true;
+
+									nbchanges++;
+									action = "Return";
+								}
+
+								if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
+									if (!localed) {
+										resultsHolder.add("LocalVariable", commit);
+										statsHolder.increment("LocalVariable");
+									}
+									localed = true;
+
+									nbchanges++;
+									action = "LocalVariable";
+								}
+							}
+
+							catch (NullPointerException e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							} catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							} catch (IndexOutOfBoundsException e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							} catch (spoon.support.reflect.reference.SpoonClassNotFoundException e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							} catch (java.lang.RuntimeException e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							} catch (java.lang.StackOverflowError e) {
+								statsHolder.increment("file_error");
+								faulty = true;
+							}
+						}
+					}
+				}
+				if (faulty)
+					statsHolder.increment("commit_error");
+
+				if (nbchanges == 1) {
+					resultsHolder.addOneOnly(action, commit);
+					statsHolder.incrementOnlyOne(action);
+
+					nbchanges = 0;
+					action = "";
+				}
+			}
+			nbchanges = 0;
+
+			statsHolder.printResults();
+			resultsHolder.saveResults();
+
+			statsHolder.reset();
 		}
 	}
 

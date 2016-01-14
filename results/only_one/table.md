@@ -1,0 +1,3 @@
+| Project name	|	Total commits	|	Commits with errors	|	Assignment	|	Local Variable	|	Return	|	FieldWrite	|	Errors during treatment	|
+|---------------|-------------------|-----------------------|---------------|-------------------|---------------|-----------|---------------------|
+| [Facebook Android SDK](https://github.com/facebook/facebook-android-sdk) |	570 commits	|	179 commits	|	16 commits	|	39 commits	|	7 commits	|	5 commits	|	585 files	|

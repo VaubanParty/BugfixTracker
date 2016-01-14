@@ -1,5 +1,6 @@
 package pfe.main;
 
+
 /**
  * 
  * @author Yassine Badache
@@ -69,31 +70,31 @@ public class DataStatsHolder {
 		switch (variableToIncrement) {
 		case ("commit"):
 			nbCommits++;
-		break;
+			break;
 
 		case ("file_error"):
 			nbFileErrors++;
-		break;
+			break;
 
 		case ("Assignment"):
 			nbAssignment++;
-		break;
+			break;
 
 		case ("LocalVariable"):
 			nbLocalVar++;
-		break;
+			break;
 
 		case ("Return"):
 			nbReturn++;
-		break;
+			break;
 
 		case ("FieldWrite"):
 			nbFieldWrite++;
-		break;
+			break;
 
 		case ("commit_error"):
 			nbCommitsWithError++;
-		break;
+			break;
 
 		default:
 			errorString = "non-existent";
@@ -108,19 +109,19 @@ public class DataStatsHolder {
 		switch (variableToIncrement) {
 		case ("Assignment"):
 			nbAssignmentOnlyOne++;
-		break;
+			break;
 
 		case ("LocalVariable"):
 			nbLocalVarOnlyOne++;
-		break;
+			break;
 
 		case ("Return"):
 			nbReturnOnlyOne++;
-		break;
+			break;
 
 		case ("FieldWrite"):
 			nbFieldWriteOnlyOne++;
-		break;
+			break;
 
 		default:
 			errorString = "non-existent";
@@ -215,5 +216,23 @@ public class DataStatsHolder {
 
 	public void setCommitsWithError(int commitsWithError) {
 		nbCommitsWithError = commitsWithError;
+	}
+
+	public void reset() {
+		nbFileErrors = 0;
+		nbCommits = 0;
+		nbCommitsWithError = 0;
+
+		nbFieldWrite = 0;
+		nbAssignment = 0;
+		nbLocalVar = 0;
+		nbReturn = 0;
+
+		nbFieldWriteOnlyOne = 0;
+		nbAssignmentOnlyOne = 0;
+		nbLocalVarOnlyOne = 0;
+		nbReturnOnlyOne = 0;
+
+		errorString = "";
 	}
 }
