@@ -1,0 +1,14 @@
+
+585 files with errors (=not treated)
+560 commits
+179 commits with errors
+****************************
+70 updates or insert of assignments
+132 updates or insert of local variables
+48 updates or insert of returns
+44 updates or insert of field written
+****************************
+15 commits with ONLY ONE assignment
+39 commits with ONLY ONE local variables
+7 commits with ONLY ONE returns
+5 commits with ONLY ONE field written
