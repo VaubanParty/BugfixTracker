@@ -1,5 +1,9 @@
 package pfe.main;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
 
 /**
  * 
@@ -216,6 +220,16 @@ public class DataStatsHolder {
 
 	public void setCommitsWithError(int commitsWithError) {
 		nbCommitsWithError = commitsWithError;
+	}
+
+	public void saveResults(String project) throws IOException {
+		File save = new File("results/" + project + "/stats.log");
+		FileUtils.writeStringToFile(save, "\n" + nbFileErrors + " files with errors (=not treated)\n" + nbCommits + " commits\n" + nbCommitsWithError
+				+ " commits with errors\n****************************\n" + nbAssignment + " updates or insert of assignments\n" + nbLocalVar
+				+ " updates or insert of local variables\n" + nbReturn + " updates or insert of returns\n" + nbFieldWrite
+				+ " updates or insert of field written\n****************************\n" + nbAssignmentOnlyOne + " commits with ONLY ONE assignment\n"
+				+ nbLocalVarOnlyOne + " commits with ONLY ONE local variables\n" + nbReturnOnlyOne + " commits with ONLY ONE returns\n" + nbFieldWriteOnlyOne
+				+ " commits with ONLY ONE field written");
 	}
 
 	public void reset() {

@@ -218,6 +218,11 @@ public class BugfixTracker {
 					}
 				}
 				nbchanges = 0;
+
+				if (statsHolder.getNbCommits() % 20 == 0) {
+					statsHolder.saveResults(project);
+					resultsHolder.saveResults();
+				}
 			}
 
 			statsHolder.printResults();
@@ -356,6 +361,11 @@ public class BugfixTracker {
 				nbchanges = 0;
 				action = "";
 			}
+
+			if (statsHolder.getNbCommits() % 20 == 0) {
+				statsHolder.saveResults(project);
+				resultsHolder.saveResults();
+			}
 		}
 		nbchanges = 0;
 
@@ -492,6 +502,11 @@ public class BugfixTracker {
 
 					nbchanges = 0;
 					action = "";
+				}
+
+				if (statsHolder.getNbCommits() % 20 == 0) {
+					statsHolder.saveResults(project);
+					resultsHolder.saveResults();
 				}
 			}
 			nbchanges = 0;
