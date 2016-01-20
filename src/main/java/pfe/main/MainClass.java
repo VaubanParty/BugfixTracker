@@ -1,6 +1,5 @@
 package pfe.main;
 
-
 public class MainClass {
 
 	public static void main(String args[]) throws Exception {
@@ -13,9 +12,9 @@ public class MainClass {
 
 		else {
 			BugfixTracker bugfix = new BugfixTracker(args);
-			// bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
+			bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
 			// bugfix.probeFileCommit("facebook-android-sdk.commitpaper.txt");
-			bugfix.probeAllCommits();
+			// bugfix.probeAllCommits();
 		}
 
 	}

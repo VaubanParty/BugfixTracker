@@ -307,7 +307,8 @@ public class BugfixTracker {
 
 								nbchanges++;
 								action = "FieldWrite";
-								System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+								// System.out.println("Changer value: " +
+								// nbchanges + "(" + action + ")");
 							}
 
 							if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
@@ -452,7 +453,8 @@ public class BugfixTracker {
 
 									nbchanges++;
 									action = "FieldWrite";
-									System.out.println("Changer value: " + nbchanges + "(" + action + ")");
+									// System.out.println("Changer value: " +
+									// nbchanges + "(" + action + ")");
 								}
 
 								if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
