@@ -64,15 +64,15 @@ public class DataResultsHolder {
 	}
 
 	public void createFiles(String project) {
-		res_assign = new File("results/" + project + "/at_least_one/assignments.md");
-		res_local = new File("results/" + project + "/at_least_one/localvar.md");
-		res_return = new File("results/" + project + "/at_least_one/return.md");
-		res_field = new File("results/" + project + "/at_least_one/fieldread.md");
+		res_assign = new File("results/by-project/" + project + "/assignment/at_least_one/README.md");
+		res_local = new File("results/by-project/" + project + "/localvar/at_least_one/README.md");
+		res_return = new File("results/by-project/" + project + "/return/at_least_one/README.md");
+		res_field = new File("results/by-project/" + project + "/fieldwrite/at_least_one/README.md");
 
-		only_one_res_assign = new File("results/" + project + "/only_one/assignments.md");
-		only_one_res_local = new File("results/" + project + "/only_one/localvar.md");
-		only_one_res_return = new File("results/" + project + "/only_one/return.md");
-		only_one_res_field = new File("results/" + project + "/only_one/fieldread.md");
+		only_one_res_assign = new File("results/by-project/" + project + "/assignment/only_one/README.md");
+		only_one_res_local = new File("results/by-project/" + project + "/localvar/only_one/README.md");
+		only_one_res_return = new File("results/by-project/" + project + "/return/only_one/README.md");
+		only_one_res_field = new File("results/by-project/" + project + "/fieldwrite/only_one/README.md");
 	}
 
 	public void add(String action, RevCommit commit) {

@@ -3,6 +3,7 @@ package pfe.main;
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.eclipse.jgit.api.Git;
@@ -14,6 +15,8 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+
+import com.github.gumtreediff.actions.model.Action;
 
 import fr.inria.sacha.spoon.diffSpoon.CtDiff;
 import fr.inria.sacha.spoon.diffSpoon.DiffSpoon;
@@ -99,11 +102,14 @@ public class BugfixTracker {
 				int nbchanges = 0;
 				String action = "";
 				boolean faulty = false;
+				List<Action> actions = new ArrayList<Action>();
 
 				statsHolder.increment("commit");
-				System.out.println("\n-------------------------------------");
-				System.out.println("--- Files of commit n°" + statsHolder.getNbCommits() + " with ID : " + commit.getName());
-				System.out.println("-------------------------------------");
+				// System.out.println("\n-------------------------------------");
+				// System.out.println("--- Files of commit n°" +
+				// statsHolder.getNbCommits() + " with ID : " +
+				// commit.getName());
+				// System.out.println("-------------------------------------");
 
 				if (commit.getParentCount() > 0) {
 					RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
@@ -132,6 +138,8 @@ public class BugfixTracker {
 
 									CtDiff result = diffspoon.compare(f1, f2);
 
+									actions = result.getRootActions();
+
 									f1.delete();
 									f2.delete();
 
@@ -139,7 +147,8 @@ public class BugfixTracker {
 									 * First checking : if it contains an
 									 * indicated action
 									 */
-									if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
+									if (result.containsAction("Remove", "FieldWrite") || result.containsAction("Insert", "FieldWrite")
+											|| result.containsAction("Update", "FieldWrite")) {
 										if (!fielded) {
 											resultsHolder.add("FieldWrite", commit);
 											statsHolder.increment("FieldWrite");
@@ -150,7 +159,8 @@ public class BugfixTracker {
 										action = "FieldWrite";
 									}
 
-									if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
+									if (result.containsAction("Remove", "Assignment") || result.containsAction("Insert", "Assignment")
+											|| result.containsAction("Update", "Assignment")) {
 										if (!assigned) {
 											resultsHolder.add("Assignment", commit);
 											statsHolder.increment("Assignment");
@@ -161,7 +171,8 @@ public class BugfixTracker {
 										action = "Assignment";
 									}
 
-									if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
+									if (result.containsAction("Remove", "Return") || result.containsAction("Insert", "Return")
+											|| result.containsAction("Update", "Return")) {
 										if (!returned) {
 											resultsHolder.add("Return", commit);
 											statsHolder.increment("Return");
@@ -172,7 +183,8 @@ public class BugfixTracker {
 										action = "Return";
 									}
 
-									if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
+									if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
+											|| result.containsAction("Update", "LocalVariable")) {
 										if (!localed) {
 											resultsHolder.add("LocalVariable", commit);
 											statsHolder.increment("LocalVariable");
@@ -209,10 +221,11 @@ public class BugfixTracker {
 					if (faulty)
 						statsHolder.increment("commit_error");
 
-					if (nbchanges == 1) {
+					if (actions.size() == 1) {
 						resultsHolder.addOneOnly(action, commit);
 						statsHolder.incrementOnlyOne(action);
 
+						System.out.println("Hello !");
 						nbchanges = 0;
 						action = "";
 					}
@@ -220,6 +233,7 @@ public class BugfixTracker {
 				nbchanges = 0;
 
 				if (statsHolder.getNbCommits() % 20 == 0) {
+					System.out.println("Save !");
 					statsHolder.saveResults(project);
 					resultsHolder.saveResults();
 				}
@@ -235,20 +249,21 @@ public class BugfixTracker {
 	public void probeOddCodeCommit(String filepath) throws Exception {
 		resultsHolder = new DataResultsHolder(project + "/odd-code/", projectOwner);
 
-		boolean assigned = false;
-		boolean returned = false;
-		boolean fielded = false;
-		boolean localed = false;
-		int nbchanges = 0;
-		String action = "";
-		boolean faulty = false;
-
 		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
+			boolean assigned = false;
+			boolean returned = false;
+			boolean fielded = false;
+			boolean localed = false;
+			int nbchanges = 0;
+			String action = "";
+			boolean faulty = false;
+
+			List<Action> actions = new ArrayList<Action>();
 			String[] parts = line.split(",");
 
-			System.out.println("\n-------------------------------------");
-			System.out.println("--- Files of commit " + parts[0]);
-			System.out.println("-------------------------------------");
+			// System.out.println("\n-------------------------------------");
+			// System.out.println("--- Files of commit " + parts[0]);
+			// System.out.println("-------------------------------------");
 
 			RevCommit bf_sha = rw.parseCommit(repository.resolve(parts[0]));
 			RevCommit bi_sha = rw.parseCommit(repository.resolve(parts[1]));
@@ -275,6 +290,7 @@ public class BugfixTracker {
 
 							CtDiff result = diffspoon.compare(f1, f2);
 
+							actions = result.getRootActions();
 							f1.delete();
 							f2.delete();
 
@@ -353,7 +369,7 @@ public class BugfixTracker {
 			if (faulty)
 				statsHolder.increment("commit_error");
 
-			if (nbchanges == 1) {
+			if (actions.size() == 1) {
 				System.out.println("So we reached once !");
 				resultsHolder.addOneOnly(action, bf_sha);
 				statsHolder.incrementOnlyOne(action);
@@ -363,11 +379,11 @@ public class BugfixTracker {
 			}
 
 			if (statsHolder.getNbCommits() % 20 == 0) {
+				System.out.println("Save !");
 				statsHolder.saveResults(project);
 				resultsHolder.saveResults();
 			}
 		}
-		nbchanges = 0;
 
 		statsHolder.printResults();
 		resultsHolder.saveResults();
@@ -378,18 +394,18 @@ public class BugfixTracker {
 	public void probeFileCommit(String filepath) throws Exception {
 		resultsHolder = new DataResultsHolder(project + "/commitpaper/", projectOwner);
 
-		boolean assigned = false;
-		boolean returned = false;
-		boolean fielded = false;
-		boolean localed = false;
-		int nbchanges = 0;
-		String action = "";
-		boolean faulty = false;
-
 		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
-			System.out.println("\n-------------------------------------");
-			System.out.println("--- Files of commit " + line);
-			System.out.println("-------------------------------------");
+			boolean assigned = false;
+			boolean returned = false;
+			boolean fielded = false;
+			boolean localed = false;
+			int nbchanges = 0;
+			String action = "";
+			boolean faulty = false;
+			List<Action> actions = new ArrayList<Action>();
+			// System.out.println("\n-------------------------------------");
+			// System.out.println("--- Files of commit " + line);
+			// System.out.println("-------------------------------------");
 
 			RevCommit commit = rw.parseCommit(repository.resolve(line));
 
@@ -417,6 +433,8 @@ public class BugfixTracker {
 								DiffSpoon diffspoon = new DiffSpoonImpl();
 
 								CtDiff result = diffspoon.compare(f1, f2);
+
+								actions = result.getRootActions();
 
 								f1.delete();
 								f2.delete();
@@ -496,7 +514,8 @@ public class BugfixTracker {
 				if (faulty)
 					statsHolder.increment("commit_error");
 
-				if (nbchanges == 1) {
+				if (actions.size() == 1) {
+					System.out.println("Hello !");
 					resultsHolder.addOneOnly(action, commit);
 					statsHolder.incrementOnlyOne(action);
 
@@ -505,6 +524,7 @@ public class BugfixTracker {
 				}
 
 				if (statsHolder.getNbCommits() % 20 == 0) {
+					System.out.println("Save !");
 					statsHolder.saveResults(project);
 					resultsHolder.saveResults();
 				}

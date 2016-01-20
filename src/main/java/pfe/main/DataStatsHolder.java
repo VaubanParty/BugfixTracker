@@ -74,31 +74,31 @@ public class DataStatsHolder {
 		switch (variableToIncrement) {
 		case ("commit"):
 			nbCommits++;
-			break;
+		break;
 
 		case ("file_error"):
 			nbFileErrors++;
-			break;
+		break;
 
 		case ("Assignment"):
 			nbAssignment++;
-			break;
+		break;
 
 		case ("LocalVariable"):
 			nbLocalVar++;
-			break;
+		break;
 
 		case ("Return"):
 			nbReturn++;
-			break;
+		break;
 
 		case ("FieldWrite"):
 			nbFieldWrite++;
-			break;
+		break;
 
 		case ("commit_error"):
 			nbCommitsWithError++;
-			break;
+		break;
 
 		default:
 			errorString = "non-existent";
@@ -113,19 +113,19 @@ public class DataStatsHolder {
 		switch (variableToIncrement) {
 		case ("Assignment"):
 			nbAssignmentOnlyOne++;
-			break;
+		break;
 
 		case ("LocalVariable"):
 			nbLocalVarOnlyOne++;
-			break;
+		break;
 
 		case ("Return"):
 			nbReturnOnlyOne++;
-			break;
+		break;
 
 		case ("FieldWrite"):
 			nbFieldWriteOnlyOne++;
-			break;
+		break;
 
 		default:
 			errorString = "non-existent";
@@ -147,7 +147,6 @@ public class DataStatsHolder {
 		System.out.println(nbLocalVarOnlyOne + " commits with ONLY ONE local variables");
 		System.out.println(nbReturnOnlyOne + " commits with ONLY ONE returns");
 		System.out.println(nbFieldWriteOnlyOne + " commits with ONLY ONE field written");
-
 	}
 
 	public int getNbCommitsWithError() {
@@ -223,7 +222,7 @@ public class DataStatsHolder {
 	}
 
 	public void saveResults(String project) throws IOException {
-		File save = new File("results/" + project + "/stats.log");
+		File save = new File("results/by-project/" + project + "/README.md");
 		FileUtils.writeStringToFile(save, "\n" + nbFileErrors + " files with errors (=not treated)\n" + nbCommits + " commits\n" + nbCommitsWithError
 				+ " commits with errors\n****************************\n" + nbAssignment + " updates or insert of assignments\n" + nbLocalVar
 				+ " updates or insert of local variables\n" + nbReturn + " updates or insert of returns\n" + nbFieldWrite
