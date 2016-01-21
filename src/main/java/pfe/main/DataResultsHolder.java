@@ -33,12 +33,12 @@ public class DataResultsHolder {
 	private File only_one_res_return;
 	private File only_one_res_field;
 
-	public DataResultsHolder(String project, String projectOwner) {
+	public DataResultsHolder(String project, String projectOwner, String mode) {
 		init();
 		this.project = project;
 		this.projectOwner = projectOwner;
 
-		createFiles(project);
+		createFiles(project, mode);
 	}
 
 	public void init() {
@@ -63,35 +63,35 @@ public class DataResultsHolder {
 		onlyOneAssignmentcommits.add("\n");
 	}
 
-	public void createFiles(String project) {
-		res_assign = new File("results/by-project/" + project + "/assignment/at_least_one/README.md");
-		res_local = new File("results/by-project/" + project + "/localvar/at_least_one/README.md");
-		res_return = new File("results/by-project/" + project + "/return/at_least_one/README.md");
-		res_field = new File("results/by-project/" + project + "/fieldwrite/at_least_one/README.md");
+	public void createFiles(String project, String mode) {
+		res_assign = new File("results/" + mode + "/by-projects/" + project + "/assignment/at_least_one/README.md");
+		res_local = new File("results/" + mode + "/by-projects/" + project + "/localvar/at_least_one/README.md");
+		res_return = new File("results/" + mode + "/by-projects/" + project + "/return/at_least_one/README.md");
+		res_field = new File("results/" + mode + "/by-projects/" + project + "/fieldwrite/at_least_one/README.md");
 
-		only_one_res_assign = new File("results/by-project/" + project + "/assignment/only_one/README.md");
-		only_one_res_local = new File("results/by-project/" + project + "/localvar/only_one/README.md");
-		only_one_res_return = new File("results/by-project/" + project + "/return/only_one/README.md");
-		only_one_res_field = new File("results/by-project/" + project + "/fieldwrite/only_one/README.md");
+		only_one_res_assign = new File("results/" + mode + "/by-projects/" + project + "/assignment/only_one/README.md");
+		only_one_res_local = new File("results/" + mode + "/by-projects/" + project + "/localvar/only_one/README.md");
+		only_one_res_return = new File("results/" + mode + "/by-projects/" + project + "/return/only_one/README.md");
+		only_one_res_field = new File("results/" + mode + "/by-projects/" + project + "/fieldwrite/only_one/README.md");
 	}
 
 	public void add(String action, RevCommit commit) {
 		switch (action) {
 		case ("FieldWrite"):
 			fieldcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		case ("Assignment"):
 			assignmentcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		case ("Return"):
 			returncommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		case ("LocalVariable"):
 			localcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		default:
 			System.out.println("Incorrect action, or not yet implemented");
@@ -103,20 +103,20 @@ public class DataResultsHolder {
 		switch (action) {
 		case ("FieldWrite"):
 			onlyOneFieldcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		case ("Assignment"):
 			onlyOneAssignmentcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName()
 					+ ")\n");
-			break;
+		break;
 
 		case ("Return"):
 			onlyOneReturncommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		case ("LocalVariable"):
 			onlyOneLocalcommits.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
-			break;
+		break;
 
 		default:
 			System.out.println("Incorrect action, or not yet implemented");

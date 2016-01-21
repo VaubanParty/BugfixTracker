@@ -78,7 +78,8 @@ public class BugfixTracker {
 
 	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
-		resultsHolder = new DataResultsHolder(project, projectOwner);
+		long startTime = System.nanoTime();
+		resultsHolder = new DataResultsHolder(project, projectOwner, "all-commits");
 
 		List<Ref> branches = bugfixUtils.getAllBranches(git);
 
@@ -99,17 +100,14 @@ public class BugfixTracker {
 				boolean returned = false;
 				boolean fielded = false;
 				boolean localed = false;
-				int nbchanges = 0;
 				String action = "";
 				boolean faulty = false;
-				List<Action> actions = new ArrayList<Action>();
+				List<Action> totalactions = new ArrayList<Action>();
 
 				statsHolder.increment("commit");
-				// System.out.println("\n-------------------------------------");
-				// System.out.println("--- Files of commit n°" +
-				// statsHolder.getNbCommits() + " with ID : " +
-				// commit.getName());
-				// System.out.println("-------------------------------------");
+				System.out.println("\n-------------------------------------");
+				System.out.println("--- Files of commit n°" + statsHolder.getNbCommits() + " with ID : " + commit.getName());
+				System.out.println("-------------------------------------");
 
 				if (commit.getParentCount() > 0) {
 					RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
@@ -138,7 +136,11 @@ public class BugfixTracker {
 
 									CtDiff result = diffspoon.compare(f1, f2);
 
-									actions = result.getRootActions();
+									List<Action> actions = result.getRootActions();
+
+									for (Action a : actions) {
+										totalactions.add(a);
+									}
 
 									f1.delete();
 									f2.delete();
@@ -155,7 +157,6 @@ public class BugfixTracker {
 										}
 										fielded = true;
 
-										nbchanges++;
 										action = "FieldWrite";
 									}
 
@@ -167,7 +168,6 @@ public class BugfixTracker {
 										}
 										assigned = true;
 
-										nbchanges++;
 										action = "Assignment";
 									}
 
@@ -179,7 +179,6 @@ public class BugfixTracker {
 										}
 										returned = true;
 
-										nbchanges++;
 										action = "Return";
 									}
 
@@ -191,27 +190,11 @@ public class BugfixTracker {
 										}
 										localed = true;
 
-										nbchanges++;
 										action = "LocalVariable";
 									}
 								}
 
-								catch (NullPointerException e) {
-									statsHolder.increment("file_error");
-									faulty = true;
-								} catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e) {
-									statsHolder.increment("file_error");
-									faulty = true;
-								} catch (IndexOutOfBoundsException e) {
-									statsHolder.increment("file_error");
-									faulty = true;
-								} catch (spoon.support.reflect.reference.SpoonClassNotFoundException e) {
-									statsHolder.increment("file_error");
-									faulty = true;
-								} catch (java.lang.RuntimeException e) {
-									statsHolder.increment("file_error");
-									faulty = true;
-								} catch (java.lang.StackOverflowError e) {
+								catch (Exception e) {
 									statsHolder.increment("file_error");
 									faulty = true;
 								}
@@ -221,20 +204,18 @@ public class BugfixTracker {
 					if (faulty)
 						statsHolder.increment("commit_error");
 
-					if (actions.size() == 1) {
+					if (totalactions.size() == 1) {
 						resultsHolder.addOneOnly(action, commit);
 						statsHolder.incrementOnlyOne(action);
 
 						System.out.println("Hello !");
-						nbchanges = 0;
 						action = "";
 					}
 				}
-				nbchanges = 0;
 
 				if (statsHolder.getNbCommits() % 20 == 0) {
 					System.out.println("Save !");
-					statsHolder.saveResults(project);
+					statsHolder.saveResults(project, "all-commits");
 					resultsHolder.saveResults();
 				}
 			}
@@ -243,27 +224,31 @@ public class BugfixTracker {
 			resultsHolder.saveResults();
 
 			statsHolder.reset();
+			long endTime = System.nanoTime();
+
+			long duration = (endTime - startTime) / 1000000;
+			System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
 		}
 	}
 
 	public void probeOddCodeCommit(String filepath) throws Exception {
-		resultsHolder = new DataResultsHolder(project + "/odd-code/", projectOwner);
+		long startTime = System.nanoTime();
+		resultsHolder = new DataResultsHolder(project, projectOwner, "odd-code");
 
 		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
 			boolean assigned = false;
 			boolean returned = false;
 			boolean fielded = false;
 			boolean localed = false;
-			int nbchanges = 0;
 			String action = "";
 			boolean faulty = false;
 
-			List<Action> actions = new ArrayList<Action>();
+			List<Action> totalactions = new ArrayList<Action>();
 			String[] parts = line.split(",");
 
-			// System.out.println("\n-------------------------------------");
-			// System.out.println("--- Files of commit " + parts[0]);
-			// System.out.println("-------------------------------------");
+			System.out.println("\n-------------------------------------");
+			System.out.println("--- Files of commit " + parts[0]);
+			System.out.println("-------------------------------------");
 
 			RevCommit bf_sha = rw.parseCommit(repository.resolve(parts[0]));
 			RevCommit bi_sha = rw.parseCommit(repository.resolve(parts[1]));
@@ -290,7 +275,12 @@ public class BugfixTracker {
 
 							CtDiff result = diffspoon.compare(f1, f2);
 
-							actions = result.getRootActions();
+							List<Action> actions = result.getRootActions();
+
+							for (Action a : actions) {
+								totalactions.add(a);
+							}
+
 							f1.delete();
 							f2.delete();
 
@@ -298,69 +288,52 @@ public class BugfixTracker {
 							 * First checking : if it contains an indicated
 							 * action
 							 */
-							if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
+							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
+									|| result.containsAction("Update", "FieldWrite")) {
 								if (!fielded) {
 									resultsHolder.add("FieldWrite", bf_sha);
-									statsHolder.increment("Fieldwrite");
+									statsHolder.increment("FieldWrite");
 								}
 								fielded = true;
 
-								nbchanges++;
 								action = "FieldWrite";
-								// System.out.println("Changer value: " +
-								// nbchanges + "(" + action + ")");
 							}
 
-							if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
+							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Assignment")
+									|| result.containsAction("Update", "Assignment")) {
 								if (!assigned) {
 									resultsHolder.add("Assignment", bf_sha);
 									statsHolder.increment("Assignment");
 								}
 								assigned = true;
 
-								nbchanges++;
 								action = "Assignment";
 							}
 
-							if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
+							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Return")
+									|| result.containsAction("Update", "Return")) {
 								if (!returned) {
 									resultsHolder.add("Return", bf_sha);
 									statsHolder.increment("Return");
 								}
 								returned = true;
 
-								nbchanges++;
 								action = "Return";
 							}
 
-							if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
+							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
+									|| result.containsAction("Update", "LocalVariable")) {
 								if (!localed) {
 									resultsHolder.add("LocalVariable", bf_sha);
 									statsHolder.increment("LocalVariable");
 								}
 								localed = true;
 
-								nbchanges++;
 								action = "LocalVariable";
 							}
 						}
 
-						catch (NullPointerException e) {
-							statsHolder.increment("file_error");
-							faulty = true;
-						} catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e) {
-							statsHolder.increment("file_error");
-							faulty = true;
-						} catch (IndexOutOfBoundsException e) {
-							statsHolder.increment("file_error");
-							faulty = true;
-						} catch (spoon.support.reflect.reference.SpoonClassNotFoundException e) {
-							statsHolder.increment("file_error");
-							faulty = true;
-						} catch (java.lang.RuntimeException e) {
-							statsHolder.increment("file_error");
-							faulty = true;
-						} catch (java.lang.StackOverflowError e) {
+						catch (Exception e) {
 							statsHolder.increment("file_error");
 							faulty = true;
 						}
@@ -370,18 +343,16 @@ public class BugfixTracker {
 			if (faulty)
 				statsHolder.increment("commit_error");
 
-			if (actions.size() == 1) {
-				System.out.println("So we reached once !");
+			if (totalactions.size() == 1) {
 				resultsHolder.addOneOnly(action, bf_sha);
 				statsHolder.incrementOnlyOne(action);
 
-				nbchanges = 0;
 				action = "";
 			}
 
 			if (statsHolder.getNbCommits() % 20 == 0) {
 				System.out.println("Save !");
-				statsHolder.saveResults(project);
+				statsHolder.saveResults(project, "odd-code");
 				resultsHolder.saveResults();
 			}
 		}
@@ -390,20 +361,23 @@ public class BugfixTracker {
 		resultsHolder.saveResults();
 
 		statsHolder.reset();
+		long endTime = System.nanoTime();
+
+		long duration = (endTime - startTime) / 1000000;
+		System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
 	}
 
 	public void probeFileCommit(String filepath) throws Exception {
-		resultsHolder = new DataResultsHolder(project + "/commitpaper/", projectOwner);
+		resultsHolder = new DataResultsHolder(project, projectOwner, "xmls-commits");
 
 		for (String line : Files.readAllLines(Paths.get("../bugfixRepoSamples/" + project + "/" + filepath))) {
 			boolean assigned = false;
 			boolean returned = false;
 			boolean fielded = false;
 			boolean localed = false;
-			int nbchanges = 0;
 			String action = "";
 			boolean faulty = false;
-			List<Action> actions = new ArrayList<Action>();
+			List<Action> totalactions = new ArrayList<Action>();
 			// System.out.println("\n-------------------------------------");
 			// System.out.println("--- Files of commit " + line);
 			// System.out.println("-------------------------------------");
@@ -435,7 +409,11 @@ public class BugfixTracker {
 
 								CtDiff result = diffspoon.compare(f1, f2);
 
-								actions = result.getRootActions();
+								List<Action> actions = result.getRootActions();
+
+								for (Action a : actions) {
+									totalactions.add(a);
+								}
 
 								f1.delete();
 								f2.delete();
@@ -444,69 +422,54 @@ public class BugfixTracker {
 								 * First checking : if it contains an indicated
 								 * action
 								 */
-								if (result.containsAction("Insert", "FieldWrite") || result.containsAction("Update", "FieldWrite")) {
+								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
+										|| result.containsAction("Update", "FieldWrite")) {
 									if (!fielded) {
 										resultsHolder.add("FieldWrite", commit);
-										statsHolder.increment("Fieldwrite");
+										statsHolder.increment("FieldWrite");
 									}
 									fielded = true;
 
-									nbchanges++;
 									action = "FieldWrite";
 									// System.out.println("Changer value: " +
 									// nbchanges + "(" + action + ")");
 								}
 
-								if (result.containsAction("Insert", "Assignment") || result.containsAction("Update", "Assignment")) {
+								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Assignment")
+										|| result.containsAction("Update", "Assignment")) {
 									if (!assigned) {
 										resultsHolder.add("Assignment", commit);
 										statsHolder.increment("Assignment");
 									}
 									assigned = true;
 
-									nbchanges++;
 									action = "Assignment";
 								}
 
-								if (result.containsAction("Insert", "Return") || result.containsAction("Update", "Return")) {
+								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Return")
+										|| result.containsAction("Update", "Return")) {
 									if (!returned) {
 										resultsHolder.add("Return", commit);
 										statsHolder.increment("Return");
 									}
 									returned = true;
 
-									nbchanges++;
 									action = "Return";
 								}
 
-								if (result.containsAction("Insert", "LocalVariable") || result.containsAction("Update", "LocalVariable")) {
+								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
+										|| result.containsAction("Update", "LocalVariable")) {
 									if (!localed) {
 										resultsHolder.add("LocalVariable", commit);
 										statsHolder.increment("LocalVariable");
 									}
 									localed = true;
 
-									nbchanges++;
 									action = "LocalVariable";
 								}
 							}
 
-							catch (NullPointerException e) {
-								statsHolder.increment("file_error");
-								faulty = true;
-							} catch (org.eclipse.jdt.internal.compiler.problem.AbortCompilation e) {
-								statsHolder.increment("file_error");
-								faulty = true;
-							} catch (IndexOutOfBoundsException e) {
-								statsHolder.increment("file_error");
-								faulty = true;
-							} catch (spoon.support.reflect.reference.SpoonClassNotFoundException e) {
-								statsHolder.increment("file_error");
-								faulty = true;
-							} catch (java.lang.RuntimeException e) {
-								statsHolder.increment("file_error");
-								faulty = true;
-							} catch (java.lang.StackOverflowError e) {
+							catch (Exception e) {
 								statsHolder.increment("file_error");
 								faulty = true;
 							}
@@ -516,24 +479,21 @@ public class BugfixTracker {
 				if (faulty)
 					statsHolder.increment("commit_error");
 
-				if (actions.size() == 1) {
+				if (totalactions.size() == 1) {
 					System.out.println("Hello !");
 					resultsHolder.addOneOnly(action, commit);
 					statsHolder.incrementOnlyOne(action);
 
-					nbchanges = 0;
 					action = "";
 				}
 
 				if (statsHolder.getNbCommits() % 20 == 0) {
 					System.out.println("Save !");
-					statsHolder.saveResults(project);
+					statsHolder.saveResults(project, "xmls-commits");
 					resultsHolder.saveResults();
 				}
 			}
-			nbchanges = 0;
-
-			statsHolder.printResults();
+			statsHolder.saveResults(project, "xmls-commits");
 			resultsHolder.saveResults();
 
 			statsHolder.reset();

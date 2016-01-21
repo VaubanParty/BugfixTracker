@@ -221,8 +221,8 @@ public class DataStatsHolder {
 		nbCommitsWithError = commitsWithError;
 	}
 
-	public void saveResults(String project) throws IOException {
-		File save = new File("results/by-project/" + project + "/README.md");
+	public void saveResults(String project, String mode) throws IOException {
+		File save = new File("results/" + mode + "/by-projects/" + project + "/README.md");
 		FileUtils.writeStringToFile(save, "\n" + nbFileErrors + " files with errors (=not treated)\n" + nbCommits + " commits\n" + nbCommitsWithError
 				+ " commits with errors\n****************************\n" + nbAssignment + " updates or insert of assignments\n" + nbLocalVar
 				+ " updates or insert of local variables\n" + nbReturn + " updates or insert of returns\n" + nbFieldWrite

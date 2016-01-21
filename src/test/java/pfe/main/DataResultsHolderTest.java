@@ -10,14 +10,11 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.Test;
 
-import pfe.main.BugfixTrackerUtils;
-import pfe.main.DataResultsHolder;
-
 public class DataResultsHolderTest {
 
 	@Test
 	public void initTest() {
-		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap");
+		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap", "all-commits");
 
 		assertNotNull(drh.getFieldcommits());
 		assertNotNull(drh.getLocalcommits());
@@ -32,7 +29,7 @@ public class DataResultsHolderTest {
 
 	@Test
 	public void createFilesTest() throws IOException {
-		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap");
+		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap", "all-commits");
 
 		assertNotNull(drh.getRes_field());
 		assertNotNull(drh.getRes_local());
@@ -43,12 +40,10 @@ public class DataResultsHolderTest {
 	@Test
 	public void addTest() throws Exception {
 		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
-		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap");
-		Repository repository = bftu
-				.setRepository("../bugfixRepoSamples/OPL_projet/.git");
+		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap", "all-commits");
+		Repository repository = bftu.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 		RevWalk rw = new RevWalk(repository);
-		RevCommit commit = rw.parseCommit(repository
-				.resolve("b4475e94f3cc1f9d2c1755e83455a5175d37be65"));
+		RevCommit commit = rw.parseCommit(repository.resolve("b4475e94f3cc1f9d2c1755e83455a5175d37be65"));
 
 		drh.add("FieldWrite", commit);
 		assertNotNull(drh.getFieldcommits());
