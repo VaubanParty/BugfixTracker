@@ -83,152 +83,138 @@ public class BugfixTracker {
 
 		List<Ref> branches = bugfixUtils.getAllBranches(git);
 
-		/** Goes through every branch available on your local repository */
-		for (Ref branch : branches) {
+		Iterable<RevCommit> commits = bugfixUtils.getAllCommits(git);
 
-			@SuppressWarnings("unused")
-			String branchName = branch.getName();
+		/** Goes through every commit of a given branch */
+		for (RevCommit commit : commits) {
+			boolean assigned = false;
+			boolean returned = false;
+			boolean fielded = false;
+			boolean localed = false;
+			String action = "";
+			boolean faulty = false;
+			List<Action> totalactions = new ArrayList<Action>();
 
-			System.out.println("Commits of branch: " + branch.getName());
+			statsHolder.increment("commit");
+			System.out.println("\n-------------------------------------");
+			System.out.println("--- Files of commit n°" + statsHolder.getNbCommits() + " with ID : " + commit.getName());
 			System.out.println("-------------------------------------");
 
-			Iterable<RevCommit> commits = bugfixUtils.getAllCommits(git);
+			if (commit.getParentCount() > 0) {
+				RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
 
-			/** Goes through every commit of a given branch */
-			for (RevCommit commit : commits) {
-				boolean assigned = false;
-				boolean returned = false;
-				boolean fielded = false;
-				boolean localed = false;
-				String action = "";
-				boolean faulty = false;
-				List<Action> totalactions = new ArrayList<Action>();
+				RevCommit targetParent = rw.parseCommit(commit.getParent(0).getId());
 
-				statsHolder.increment("commit");
-				System.out.println("\n-------------------------------------");
-				System.out.println("--- Files of commit n°" + statsHolder.getNbCommits() + " with ID : " + commit.getName());
-				System.out.println("-------------------------------------");
+				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
 
-				if (commit.getParentCount() > 0) {
-					RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
+				df.setRepository(repository);
+				df.setDiffComparator(RawTextComparator.DEFAULT);
+				df.setDetectRenames(true);
 
-					RevCommit targetParent = rw.parseCommit(commit.getParent(0).getId());
+				List<DiffEntry> diffs = df.scan(targetParent.getTree(), targetCommit.getTree());
 
-					DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+				for (DiffEntry diff : diffs) {
+					String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
+					String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
 
-					df.setRepository(repository);
-					df.setDiffComparator(RawTextComparator.DEFAULT);
-					df.setDetectRenames(true);
+					if (diff.getNewPath().contains(".java")) {
+						File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
+						File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
 
-					List<DiffEntry> diffs = df.scan(targetParent.getTree(), targetCommit.getTree());
+						if (f1 != null && f2 != null) {
+							try {
+								DiffSpoon diffspoon = new DiffSpoonImpl();
 
-					for (DiffEntry diff : diffs) {
-						String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
-						String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+								CtDiff result = diffspoon.compare(f1, f2);
 
-						if (diff.getNewPath().contains(".java")) {
-							File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
-							File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+								List<Action> actions = result.getRootActions();
 
-							if (f1 != null && f2 != null) {
-								try {
-									DiffSpoon diffspoon = new DiffSpoonImpl();
-
-									CtDiff result = diffspoon.compare(f1, f2);
-
-									List<Action> actions = result.getRootActions();
-
-									for (Action a : actions) {
-										totalactions.add(a);
-									}
-
-									f1.delete();
-									f2.delete();
-
-									/*
-									 * First checking : if it contains an
-									 * indicated action
-									 */
-									if (result.containsAction("Remove", "FieldWrite") || result.containsAction("Insert", "FieldWrite")
-											|| result.containsAction("Update", "FieldWrite")) {
-										if (!fielded) {
-											resultsHolder.add("FieldWrite", commit);
-											statsHolder.increment("FieldWrite");
-										}
-										fielded = true;
-
-										action = "FieldWrite";
-									}
-
-									if (result.containsAction("Remove", "Assignment") || result.containsAction("Insert", "Assignment")
-											|| result.containsAction("Update", "Assignment")) {
-										if (!assigned) {
-											resultsHolder.add("Assignment", commit);
-											statsHolder.increment("Assignment");
-										}
-										assigned = true;
-
-										action = "Assignment";
-									}
-
-									if (result.containsAction("Remove", "Return") || result.containsAction("Insert", "Return")
-											|| result.containsAction("Update", "Return")) {
-										if (!returned) {
-											resultsHolder.add("Return", commit);
-											statsHolder.increment("Return");
-										}
-										returned = true;
-
-										action = "Return";
-									}
-
-									if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
-											|| result.containsAction("Update", "LocalVariable")) {
-										if (!localed) {
-											resultsHolder.add("LocalVariable", commit);
-											statsHolder.increment("LocalVariable");
-										}
-										localed = true;
-
-										action = "LocalVariable";
-									}
+								for (Action a : actions) {
+									totalactions.add(a);
 								}
 
-								catch (Exception e) {
-									statsHolder.increment("file_error");
-									faulty = true;
+								f1.delete();
+								f2.delete();
+
+								if (result.containsAction("Remove", "FieldWrite") || result.containsAction("Insert", "FieldWrite")
+										|| result.containsAction("Update", "FieldWrite")) {
+									if (!fielded) {
+										resultsHolder.add("FieldWrite", commit);
+										statsHolder.increment("FieldWrite");
+									}
+									fielded = true;
+
+									action = "FieldWrite";
 								}
+
+								if (result.containsAction("Remove", "Assignment") || result.containsAction("Insert", "Assignment")
+										|| result.containsAction("Update", "Assignment")) {
+									if (!assigned) {
+										resultsHolder.add("Assignment", commit);
+										statsHolder.increment("Assignment");
+									}
+									assigned = true;
+
+									action = "Assignment";
+								}
+
+								if (result.containsAction("Remove", "Return") || result.containsAction("Insert", "Return")
+										|| result.containsAction("Update", "Return")) {
+									if (!returned) {
+										resultsHolder.add("Return", commit);
+										statsHolder.increment("Return");
+									}
+									returned = true;
+
+									action = "Return";
+								}
+
+								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
+										|| result.containsAction("Update", "LocalVariable")) {
+									if (!localed) {
+										resultsHolder.add("LocalVariable", commit);
+										statsHolder.increment("LocalVariable");
+									}
+									localed = true;
+
+									action = "LocalVariable";
+								}
+							}
+
+							catch (Exception e) {
+								statsHolder.increment("file_error");
+								faulty = true;
 							}
 						}
 					}
-					if (faulty)
-						statsHolder.increment("commit_error");
-
-					if (totalactions.size() == 1) {
-						resultsHolder.addOneOnly(action, commit);
-						statsHolder.incrementOnlyOne(action);
-
-						System.out.println("Hello !");
-						action = "";
-					}
 				}
+				if (faulty)
+					statsHolder.increment("commit_error");
 
-				if (statsHolder.getNbCommits() % 20 == 0) {
-					System.out.println("Save !");
-					statsHolder.saveResults(project, "all-commits");
-					resultsHolder.saveResults();
+				if (totalactions.size() == 1) {
+					resultsHolder.addOneOnly(action, commit);
+					statsHolder.incrementOnlyOne(action);
+
+					System.out.println("Hello !");
+					action = "";
 				}
 			}
 
-			statsHolder.printResults();
-			resultsHolder.saveResults();
-
-			statsHolder.reset();
-			long endTime = System.nanoTime();
-
-			long duration = (endTime - startTime) / 1000000;
-			System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
+			if (statsHolder.getNbCommits() % 20 == 0) {
+				System.out.println("Save !");
+				statsHolder.saveResults(project, "all-commits");
+				resultsHolder.saveResults();
+			}
 		}
+
+		statsHolder.printResults();
+		resultsHolder.saveResults();
+
+		statsHolder.reset();
+		long endTime = System.nanoTime();
+
+		long duration = (endTime - startTime) / 1000000;
+		System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
 	}
 
 	public void probeOddCodeCommit(String filepath) throws Exception {

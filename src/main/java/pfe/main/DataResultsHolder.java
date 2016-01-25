@@ -20,6 +20,8 @@ public class DataResultsHolder {
 	private List<String> onlyOneReturncommits;
 	private List<String> onlyOneAssignmentcommits;
 
+	private List<String> onlyOneOthers;
+
 	private String project;
 	private String projectOwner;
 
@@ -32,6 +34,8 @@ public class DataResultsHolder {
 	private File only_one_res_local;
 	private File only_one_res_return;
 	private File only_one_res_field;
+
+	private File only_one_others;
 
 	public DataResultsHolder(String project, String projectOwner, String mode) {
 		init();
@@ -51,6 +55,7 @@ public class DataResultsHolder {
 		onlyOneLocalcommits = new ArrayList<String>();
 		onlyOneReturncommits = new ArrayList<String>();
 		onlyOneAssignmentcommits = new ArrayList<String>();
+		onlyOneOthers = new ArrayList<String>();
 
 		fieldcommits.add("\n");
 		localcommits.add("\n");
@@ -61,6 +66,7 @@ public class DataResultsHolder {
 		onlyOneLocalcommits.add("\n");
 		onlyOneReturncommits.add("\n");
 		onlyOneAssignmentcommits.add("\n");
+		onlyOneOthers.add("\n");
 	}
 
 	public void createFiles(String project, String mode) {
@@ -73,6 +79,8 @@ public class DataResultsHolder {
 		only_one_res_local = new File("results/" + mode + "/by-projects/" + project + "/localvar/only_one/README.md");
 		only_one_res_return = new File("results/" + mode + "/by-projects/" + project + "/return/only_one/README.md");
 		only_one_res_field = new File("results/" + mode + "/by-projects/" + project + "/fieldwrite/only_one/README.md");
+
+		only_one_others = new File("results/" + mode + "/by-projects/" + project + "/others/only_one/README.md");
 	}
 
 	public void add(String action, RevCommit commit) {
@@ -119,7 +127,7 @@ public class DataResultsHolder {
 		break;
 
 		default:
-			System.out.println("Incorrect action, or not yet implemented");
+			onlyOneOthers.add("[" + commit.getName() + "](https://github.com/" + projectOwner + "/" + project + "/commit/" + commit.getName() + ")\n");
 			break;
 		}
 	}
@@ -134,6 +142,7 @@ public class DataResultsHolder {
 		FileUtils.writeStringToFile(only_one_res_local, onlyOneLocalcommits.toString());
 		FileUtils.writeStringToFile(only_one_res_return, onlyOneReturncommits.toString());
 		FileUtils.writeStringToFile(only_one_res_field, onlyOneFieldcommits.toString());
+		FileUtils.writeStringToFile(only_one_others, onlyOneOthers.toString());
 	}
 
 	public File getRes_assign() {

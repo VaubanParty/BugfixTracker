@@ -45,6 +45,8 @@ public class DataStatsHolder {
 
 	private int nbFieldWriteOnlyOne;
 
+	private int nbOthers;
+
 	private String errorString;
 
 	/**
@@ -59,6 +61,7 @@ public class DataStatsHolder {
 		nbAssignment = 0;
 		nbLocalVar = 0;
 		nbReturn = 0;
+		nbOthers = 0;
 
 		nbFieldWriteOnlyOne = 0;
 		nbAssignmentOnlyOne = 0;
@@ -74,31 +77,31 @@ public class DataStatsHolder {
 		switch (variableToIncrement) {
 		case ("commit"):
 			nbCommits++;
-		break;
+			break;
 
 		case ("file_error"):
 			nbFileErrors++;
-		break;
+			break;
 
 		case ("Assignment"):
 			nbAssignment++;
-		break;
+			break;
 
 		case ("LocalVariable"):
 			nbLocalVar++;
-		break;
+			break;
 
 		case ("Return"):
 			nbReturn++;
-		break;
+			break;
 
 		case ("FieldWrite"):
 			nbFieldWrite++;
-		break;
+			break;
 
 		case ("commit_error"):
 			nbCommitsWithError++;
-		break;
+			break;
 
 		default:
 			errorString = "non-existent";
@@ -108,27 +111,26 @@ public class DataStatsHolder {
 	}
 
 	public void incrementOnlyOne(String variableToIncrement) {
-		errorString = "";
 
 		switch (variableToIncrement) {
 		case ("Assignment"):
 			nbAssignmentOnlyOne++;
-		break;
+			break;
 
 		case ("LocalVariable"):
 			nbLocalVarOnlyOne++;
-		break;
+			break;
 
 		case ("Return"):
 			nbReturnOnlyOne++;
-		break;
+			break;
 
 		case ("FieldWrite"):
 			nbFieldWriteOnlyOne++;
-		break;
+			break;
 
 		default:
-			errorString = "non-existent";
+			nbOthers++;
 			break;
 		}
 	}
@@ -147,6 +149,7 @@ public class DataStatsHolder {
 		System.out.println(nbLocalVarOnlyOne + " commits with ONLY ONE local variables");
 		System.out.println(nbReturnOnlyOne + " commits with ONLY ONE returns");
 		System.out.println(nbFieldWriteOnlyOne + " commits with ONLY ONE field written");
+		System.out.println(nbOthers + " commits with ONLY ONE change (!= from the four others)");
 	}
 
 	public int getNbCommitsWithError() {
@@ -228,7 +231,7 @@ public class DataStatsHolder {
 				+ " updates or insert of local variables\n" + nbReturn + " updates or insert of returns\n" + nbFieldWrite
 				+ " updates or insert of field written\n****************************\n" + nbAssignmentOnlyOne + " commits with ONLY ONE assignment\n"
 				+ nbLocalVarOnlyOne + " commits with ONLY ONE local variables\n" + nbReturnOnlyOne + " commits with ONLY ONE returns\n" + nbFieldWriteOnlyOne
-				+ " commits with ONLY ONE field written");
+				+ " commits with ONLY ONE field written\n" + nbOthers + " commits with ONLY ONE change != from the four others");
 	}
 
 	public void reset() {

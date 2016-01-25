@@ -12,5 +12,4 @@
 0 commits with ONLY ONE local variables
 0 commits with ONLY ONE returns
 0 commits with ONLY ONE field written
-****************************
-Execution time : 603745ms (6037s) (~10m)
+42 commits with ONLY ONE change != from the four others
