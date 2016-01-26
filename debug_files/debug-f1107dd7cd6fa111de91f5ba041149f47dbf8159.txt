@@ -1,0 +1,6 @@
+File being diffed : facebook/src/com/facebook/model/GraphObject.java
+Actions : 1
+Update Invocation at com.facebook.model.GraphObject:367
+	string.toLowerCase(java.util.Locale.US) to string.toLowerCase()
+	
+Total actions size : 1

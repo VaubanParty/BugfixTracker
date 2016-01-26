@@ -1,0 +1,6 @@
+File being diffed : facebook/src/com/facebook/internal/AttributionIdentifiers.java
+Actions : 1
+Delete Return at com.facebook.internal.AttributionIdentifiers:137
+	return identifiers
+	
+Total actions size : 1

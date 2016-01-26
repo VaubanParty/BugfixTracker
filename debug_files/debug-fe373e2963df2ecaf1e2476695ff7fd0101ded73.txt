@@ -1,0 +1,6 @@
+File being diffed : examples/stream/src/com/facebook/stream/StreamRenderer.java
+Actions : 1
+Update Literal at com.facebook.stream.StreamRenderer:208
+	"http://touch.facebook.com/#/profile.php?id=" to "http://touch.facebook.com/profile.php?id="
+	
+Total actions size : 1

@@ -12,7 +12,8 @@ public class MainClass {
 		else {
 			BugfixTracker bugfix = new BugfixTracker(args);
 			// bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
-			bugfix.probeAllCommits();
+			// bugfix.probeAllCommits();
+			bugfix.commitSampleTry("59b760279c7f0fae38ea80f6bd71790bb236a6ff");
 		}
 
 	}

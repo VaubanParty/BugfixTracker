@@ -6,11 +6,11 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.diff.DiffEntry;
 import org.eclipse.jgit.diff.DiffFormatter;
 import org.eclipse.jgit.diff.RawTextComparator;
-import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -76,12 +76,70 @@ public class BugfixTracker {
 		rw = new RevWalk(repository);
 	}
 
+	public void commitSampleTry(String ID) throws Exception {
+		List<Action> totalactions = new ArrayList<Action>();
+		List<Action> act = new ArrayList<Action>();
+		List<String> debugging = new ArrayList<String>();
+		String r = "";
+		File debug = new File("debug-" + ID + ".txt");
+
+		RevCommit commit = rw.parseCommit(repository.resolve(ID));
+
+		if (commit.getParentCount() > 0) {
+			RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
+
+			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
+
+			df.setRepository(repository);
+			df.setDiffComparator(RawTextComparator.DEFAULT);
+			df.setDetectRenames(true);
+
+			List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
+
+			for (DiffEntry diff : diffs) {
+				String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
+				String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+
+				if (diff.getNewPath().contains(".java")) {
+					File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
+					File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+
+					if (f1 != null && f2 != null) {
+						try {
+							DiffSpoon diffspoon = new DiffSpoonImpl();
+
+							CtDiff result = diffspoon.compare(f1, f2);
+
+							List<Action> actions = result.getRootActions();
+							act = result.getRootActions();
+
+							r = result.toString();
+
+							for (Action a : actions) {
+								totalactions.add(a);
+							}
+
+							f1.delete();
+							f2.delete();
+						}
+
+						catch (Exception e) {
+						}
+					}
+				}
+				debugging.add("File being diffed : " + diff.getNewPath() + "\nActions : " + act.size() + "\n" + r.toString());
+			}
+			debugging.add("Total actions size : " + totalactions.size());
+			FileUtils.writeStringToFile(debug, debugging.toString());
+		}
+	}
+
 	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
 		long startTime = System.nanoTime();
 		resultsHolder = new DataResultsHolder(project, projectOwner, "all-commits");
 
-		List<Ref> branches = bugfixUtils.getAllBranches(git);
+		// List<Ref> branches = bugfixUtils.getAllBranches(git);
 
 		Iterable<RevCommit> commits = bugfixUtils.getAllCommits(git);
 
