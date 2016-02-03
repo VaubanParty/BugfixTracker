@@ -19,7 +19,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.junit.Test;
 
-import pfe.main.BugfixTrackerUtils;
+import pfe.main.CommitAnalyzingUtils;
 
 import com.google.common.collect.Iterables;
 
@@ -27,7 +27,7 @@ public class BugfixTrackerUtilsTest {
 
 	@Test
 	public void setRepositoryTest() throws Exception {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		Repository repository = bftu
 				.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 
@@ -37,7 +37,7 @@ public class BugfixTrackerUtilsTest {
 
 	@Test
 	public void getAllBranchesTest() throws Exception {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		Repository repository = bftu
 				.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 
@@ -50,7 +50,7 @@ public class BugfixTrackerUtilsTest {
 
 	@Test
 	public void getAllCommitsTest() throws Exception {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		Repository repository = bftu
 				.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 
@@ -63,7 +63,7 @@ public class BugfixTrackerUtilsTest {
 
 	@Test
 	public void writeContentInFileTest() throws IOException {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		String name = "Hello.java";
 		String content = "public static void main (String[] args)	{"
 				+ "System.out.println(\"Hello world !\");" + "}	}";
@@ -77,7 +77,7 @@ public class BugfixTrackerUtilsTest {
 
 	@Test
 	public void getContent() throws Exception {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		Repository repository = bftu
 				.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 		RevWalk rw = new RevWalk(repository);

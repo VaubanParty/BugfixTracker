@@ -10,10 +10,10 @@ public class MainClass {
 		}
 
 		else {
-			BugfixTracker bugfix = new BugfixTracker(args);
+			CommitAnalyzer bugfix = new CommitAnalyzer(args);
 			// bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
 			// bugfix.probeAllCommits();
-			bugfix.commitSampleTry("59b760279c7f0fae38ea80f6bd71790bb236a6ff");
+			bugfix.commitSampleTry("faae1d6fd17db198e1da3736b8e152390c23a33b");
 		}
 
 	}

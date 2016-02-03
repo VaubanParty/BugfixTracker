@@ -9,7 +9,7 @@ public class BugfixTrackerTest {
 
 	@Test
 	public void bugfixTrackerTest() throws Exception {
-		BugfixTracker bft = new BugfixTracker(new String[] { "ouap", "OPL_projet" });
+		CommitAnalyzer bft = new CommitAnalyzer(new String[] { "ouap", "OPL_projet" });
 
 		assertEquals("ouap", bft.getProjectOwner());
 		assertEquals("OPL_projet", bft.getProject());
@@ -25,7 +25,7 @@ public class BugfixTrackerTest {
 
 	@Test
 	public void probeAllCommitsTest() throws Exception {
-		BugfixTracker bft = new BugfixTracker(new String[] { "pagsegura", "../java" });
+		CommitAnalyzer bft = new CommitAnalyzer(new String[] { "pagsegura", "../java" });
 		bft.probeAllCommits();
 
 		assertEquals(13, bft.getStatsHolder().getNbAssignment());

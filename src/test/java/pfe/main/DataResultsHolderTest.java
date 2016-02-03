@@ -39,7 +39,7 @@ public class DataResultsHolderTest {
 
 	@Test
 	public void addTest() throws Exception {
-		BugfixTrackerUtils bftu = new BugfixTrackerUtils();
+		CommitAnalyzingUtils bftu = new CommitAnalyzingUtils();
 		DataResultsHolder drh = new DataResultsHolder("OPL_projet", "ouap", "all-commits");
 		Repository repository = bftu.setRepository("../bugfixRepoSamples/OPL_projet/.git");
 		RevWalk rw = new RevWalk(repository);

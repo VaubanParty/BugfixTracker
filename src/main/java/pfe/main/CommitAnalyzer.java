@@ -21,6 +21,7 @@ import com.github.gumtreediff.actions.model.Action;
 import fr.inria.sacha.spoon.diffSpoon.CtDiff;
 import fr.inria.sacha.spoon.diffSpoon.DiffSpoon;
 import fr.inria.sacha.spoon.diffSpoon.DiffSpoonImpl;
+import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
 
 /**
  * 
@@ -32,10 +33,10 @@ import fr.inria.sacha.spoon.diffSpoon.DiffSpoonImpl;
  *         the numbers given.
  * 
  */
-public class BugfixTracker {
+public class CommitAnalyzer {
 
 	/** Various methods encapsulating methods to treats Git and commits datas */
-	private BugfixTrackerUtils bugfixUtils;
+	private CommitAnalyzingUtils commitAnalyzingUtils;
 
 	/** All the statistical datas (number of faulty commit, actions, etc) */
 	private DataStatsHolder statsHolder;
@@ -55,23 +56,22 @@ public class BugfixTracker {
 	/** Repository object, representing the directory */
 	private Repository repository;
 
-	/** Git entity to treat with the Repository datas */
+	/** Git entity to treat with the Repository data */
 	private Git git;
 
 	/** Revision walker from JGit */
 	private RevWalk rw;
 
 	/** Classic constructor */
-	public BugfixTracker(String[] args) throws Exception {
+	public CommitAnalyzer(String[] args) throws Exception {
 		projectOwner = args[0];
 		project = args[1];
 
-		// TODO: Make this user-friendly
 		directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 
-		bugfixUtils = new BugfixTrackerUtils();
+		commitAnalyzingUtils = new CommitAnalyzingUtils();
 		statsHolder = new DataStatsHolder();
-		repository = bugfixUtils.setRepository(directoryPath);
+		repository = commitAnalyzingUtils.setRepository(directoryPath);
 		git = new Git(repository);
 		rw = new RevWalk(repository);
 	}
@@ -88,21 +88,17 @@ public class BugfixTracker {
 		if (commit.getParentCount() > 0) {
 			RevCommit parent = rw.parseCommit(commit.getParent(0).getId());
 
-			DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-
-			df.setRepository(repository);
-			df.setDiffComparator(RawTextComparator.DEFAULT);
-			df.setDetectRenames(true);
+			DiffFormatter df = commitAnalyzingUtils.setDiffFormatter(repository, true);
 
 			List<DiffEntry> diffs = df.scan(parent.getTree(), commit.getTree());
 
 			for (DiffEntry diff : diffs) {
-				String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
-				String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+				String currentContent = commitAnalyzingUtils.getContent(repository, diff, commit)[0];
+				String previousContent = commitAnalyzingUtils.getContent(repository, diff, commit)[1];
 
-				if (diff.getNewPath().contains(".java")) {
-					File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
-					File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+				if (diff.getNewPath().contains(".java") && !diff.getNewPath().contains("Test")) {
+					File f1 = commitAnalyzingUtils.writeContentInFile("c1.java", currentContent);
+					File f2 = commitAnalyzingUtils.writeContentInFile("c2.java", previousContent);
 
 					if (f1 != null && f2 != null) {
 						try {
@@ -117,6 +113,7 @@ public class BugfixTracker {
 
 							for (Action a : actions) {
 								totalactions.add(a);
+								System.out.println(a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName());
 							}
 
 							f1.delete();
@@ -139,9 +136,9 @@ public class BugfixTracker {
 		long startTime = System.nanoTime();
 		resultsHolder = new DataResultsHolder(project, projectOwner, "all-commits");
 
-		// List<Ref> branches = bugfixUtils.getAllBranches(git);
+		// List<Ref> branches = commitAnalyzingUtils.getAllBranches(git);
 
-		Iterable<RevCommit> commits = bugfixUtils.getAllCommits(git);
+		Iterable<RevCommit> commits = commitAnalyzingUtils.getAllCommits(git);
 
 		/** Goes through every commit of a given branch */
 		for (RevCommit commit : commits) {
@@ -160,24 +157,19 @@ public class BugfixTracker {
 
 			if (commit.getParentCount() > 0) {
 				RevCommit targetCommit = rw.parseCommit(repository.resolve(commit.getName()));
-
 				RevCommit targetParent = rw.parseCommit(commit.getParent(0).getId());
 
-				DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
-
-				df.setRepository(repository);
-				df.setDiffComparator(RawTextComparator.DEFAULT);
-				df.setDetectRenames(true);
+				DiffFormatter df = commitAnalyzingUtils.setDiffFormatter(repository, true);
 
 				List<DiffEntry> diffs = df.scan(targetParent.getTree(), targetCommit.getTree());
 
 				for (DiffEntry diff : diffs) {
-					String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
-					String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+					String currentContent = commitAnalyzingUtils.getContent(repository, diff, commit)[0];
+					String previousContent = commitAnalyzingUtils.getContent(repository, diff, commit)[1];
 
 					if (diff.getNewPath().contains(".java")) {
-						File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
-						File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+						File f1 = commitAnalyzingUtils.writeContentInFile("c1.java", currentContent);
+						File f2 = commitAnalyzingUtils.writeContentInFile("c2.java", previousContent);
 
 						if (f1 != null && f2 != null) {
 							try {
@@ -185,10 +177,14 @@ public class BugfixTracker {
 
 								CtDiff result = diffspoon.compare(f1, f2);
 
+								// Recup
+								// action.getNode.getMetaData.getParent(Type.class)
+								// + ignore tests
 								List<Action> actions = result.getRootActions();
 
 								for (Action a : actions) {
 									totalactions.add(a);
+									a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
 								}
 
 								f1.delete();
@@ -306,12 +302,12 @@ public class BugfixTracker {
 			List<DiffEntry> diffs = df.scan(bf_sha.getTree(), bi_sha.getTree());
 
 			for (DiffEntry diff : diffs) {
-				String currentContent = bugfixUtils.getContent(repository, diff, bf_sha)[0];
-				String previousContent = bugfixUtils.getContent(repository, diff, bi_sha)[0];
+				String currentContent = commitAnalyzingUtils.getContent(repository, diff, bf_sha)[0];
+				String previousContent = commitAnalyzingUtils.getContent(repository, diff, bi_sha)[0];
 
 				if (diff.getNewPath().contains(".java")) {
-					File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
-					File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+					File f1 = commitAnalyzingUtils.writeContentInFile("c1.java", currentContent);
+					File f2 = commitAnalyzingUtils.writeContentInFile("c2.java", previousContent);
 
 					if (f1 != null && f2 != null) {
 						try {
@@ -440,12 +436,12 @@ public class BugfixTracker {
 				List<DiffEntry> diffs = df.scan(commit.getTree(), parent.getTree());
 
 				for (DiffEntry diff : diffs) {
-					String currentContent = bugfixUtils.getContent(repository, diff, commit)[0];
-					String previousContent = bugfixUtils.getContent(repository, diff, commit)[1];
+					String currentContent = commitAnalyzingUtils.getContent(repository, diff, commit)[0];
+					String previousContent = commitAnalyzingUtils.getContent(repository, diff, commit)[1];
 
 					if (diff.getNewPath().contains(".java")) {
-						File f1 = bugfixUtils.writeContentInFile("c1.java", currentContent);
-						File f2 = bugfixUtils.writeContentInFile("c2.java", previousContent);
+						File f1 = commitAnalyzingUtils.writeContentInFile("c1.java", currentContent);
+						File f2 = commitAnalyzingUtils.writeContentInFile("c2.java", previousContent);
 
 						if (f1 != null && f2 != null) {
 							try {
@@ -547,12 +543,12 @@ public class BugfixTracker {
 	/*
 	 * Getters and setters Below this point
 	 */
-	public BugfixTrackerUtils getBugfixUtils() {
-		return bugfixUtils;
+	public CommitAnalyzingUtils getBugfixUtils() {
+		return commitAnalyzingUtils;
 	}
 
-	public void setBugfixUtils(BugfixTrackerUtils bugfixUtils) {
-		this.bugfixUtils = bugfixUtils;
+	public void setBugfixUtils(CommitAnalyzingUtils commitAnalyzingUtils) {
+		this.commitAnalyzingUtils = commitAnalyzingUtils;
 	}
 
 	public DataStatsHolder getStatsHolder() {
