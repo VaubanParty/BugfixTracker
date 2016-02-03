@@ -1,4 +1,4 @@
-package pfe.main;
+package pfe.commitAnalysis;
 
 import java.io.File;
 import java.nio.file.Files;
@@ -15,6 +15,9 @@ import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
+
+import pfe.resultHandling.DataResultsHolder;
+import pfe.resultHandling.DataStatsHolder;
 
 import com.github.gumtreediff.actions.model.Action;
 
@@ -177,9 +180,6 @@ public class CommitAnalyzer {
 
 								CtDiff result = diffspoon.compare(f1, f2);
 
-								// Recup
-								// action.getNode.getMetaData.getParent(Type.class)
-								// + ignore tests
 								List<Action> actions = result.getRootActions();
 
 								for (Action a : actions) {

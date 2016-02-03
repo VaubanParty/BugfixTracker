@@ -4,7 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
-import pfe.main.DataStatsHolder;
+import pfe.resultHandling.DataStatsHolder;
 
 public class DataStatsHolderTest {
 

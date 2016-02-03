@@ -1,4 +1,4 @@
-package pfe.main;
+package pfe.resultHandling;
 
 import java.io.File;
 import java.io.IOException;

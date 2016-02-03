@@ -19,7 +19,7 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 import org.junit.Test;
 
-import pfe.main.CommitAnalyzingUtils;
+import pfe.commitAnalysis.CommitAnalyzingUtils;
 
 import com.google.common.collect.Iterables;
 

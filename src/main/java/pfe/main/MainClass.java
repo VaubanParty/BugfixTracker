@@ -1,5 +1,7 @@
 package pfe.main;
 
+import pfe.commitAnalysis.CommitAnalyzer;
+
 public class MainClass {
 
 	public static void main(String args[]) throws Exception {

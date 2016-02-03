@@ -10,6 +10,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.junit.Test;
 
+import pfe.commitAnalysis.CommitAnalyzingUtils;
+import pfe.resultHandling.DataResultsHolder;
+
 public class DataResultsHolderTest {
 
 	@Test
