@@ -1,11 +1,7 @@
 [
-, [4a1716142666823f1cd1af7190034ab3e3d7115b](https://github.com/facebook/facebook-android-sdk/commit/4a1716142666823f1cd1af7190034ab3e3d7115b)
-, [84de49eb7ba28e0e706a8e3f6d7313621206b965](https://github.com/facebook/facebook-android-sdk/commit/84de49eb7ba28e0e706a8e3f6d7313621206b965)
 , [b3a6e95e7ab049bf5455432a745b14458ce49d94](https://github.com/facebook/facebook-android-sdk/commit/b3a6e95e7ab049bf5455432a745b14458ce49d94)
 , [2cd3ee266a7d8c4e7fa36de48cb4d370b80059dd](https://github.com/facebook/facebook-android-sdk/commit/2cd3ee266a7d8c4e7fa36de48cb4d370b80059dd)
 , [aa094b25021d0ed29b04c693c51dc9aa2f02bf59](https://github.com/facebook/facebook-android-sdk/commit/aa094b25021d0ed29b04c693c51dc9aa2f02bf59)
-, [a9a791dc65d8a3a66ed9aed703437ec496bcacf2](https://github.com/facebook/facebook-android-sdk/commit/a9a791dc65d8a3a66ed9aed703437ec496bcacf2)
-, [2aae99e97a6ad868e4d6bed53efbb5a49832f804](https://github.com/facebook/facebook-android-sdk/commit/2aae99e97a6ad868e4d6bed53efbb5a49832f804)
 , [50e8000d765abca3417744eb8cadb2b4c002862c](https://github.com/facebook/facebook-android-sdk/commit/50e8000d765abca3417744eb8cadb2b4c002862c)
 , [c526ceebb2633b688817ac92a56ed5f91a99c6ed](https://github.com/facebook/facebook-android-sdk/commit/c526ceebb2633b688817ac92a56ed5f91a99c6ed)
 , [ee1b9b154e39a8a518da6a790a8b06415669d484](https://github.com/facebook/facebook-android-sdk/commit/ee1b9b154e39a8a518da6a790a8b06415669d484)

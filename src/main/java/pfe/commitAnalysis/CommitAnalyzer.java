@@ -30,10 +30,8 @@ import fr.inria.sacha.spoon.diffSpoon.SpoonGumTreeBuilder;
  * 
  * @author Yassine BADACHE
  *
- *         This class is used to track files in commit, and using the Gumtree
- *         AST Diff library given by Spoon to get the difference between the
- *         current and previous version of a commit, then extracting value from
- *         the numbers given.
+ *         This class is used to track files in commit, and uses the Gumtree AST Diff library given by Spoon to get the difference between the current and
+ *         previous version of a file in the commit, then extracting value from the numbers given.
  * 
  */
 public class CommitAnalyzer {
@@ -137,9 +135,8 @@ public class CommitAnalyzer {
 	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
 		long startTime = System.nanoTime();
+		int blbl = 0;
 		resultsHolder = new DataResultsHolder(project, projectOwner, "all-commits");
-
-		// List<Ref> branches = commitAnalyzingUtils.getAllBranches(git);
 
 		Iterable<RevCommit> commits = commitAnalyzingUtils.getAllCommits(git);
 
@@ -184,55 +181,55 @@ public class CommitAnalyzer {
 
 								for (Action a : actions) {
 									totalactions.add(a);
-									a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
+									String actType = a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
+									if (actType.contains("LocalVariable")) {
+										blbl++;
+										System.out.println(actType);
+									}
+
+									if (actType.equals("CtFieldWriteImpl")) {
+										if (!fielded) {
+											resultsHolder.add("FieldWrite", commit);
+											statsHolder.increment("FieldWrite");
+										}
+										fielded = true;
+
+										action = "FieldWrite";
+									}
+
+									if (actType.equals("CtAssignmentImpl")) {
+										if (!assigned) {
+											resultsHolder.add("Assignment", commit);
+											statsHolder.increment("Assignment");
+										}
+										assigned = true;
+
+										action = "Assignment";
+									}
+
+									if (actType.equals("CtReturnImpl")) {
+										if (!returned) {
+											resultsHolder.add("Return", commit);
+											statsHolder.increment("Return");
+										}
+										returned = true;
+
+										action = "Return";
+									}
+
+									if (actType.equals("CtLocalVariableImpl")) {
+										if (!localed) {
+											resultsHolder.add("LocalVariable", commit);
+											statsHolder.increment("LocalVariable");
+										}
+										localed = true;
+
+										action = "LocalVariable";
+									}
 								}
 
 								f1.delete();
 								f2.delete();
-
-								if (result.containsAction("Remove", "FieldWrite") || result.containsAction("Insert", "FieldWrite")
-										|| result.containsAction("Update", "FieldWrite")) {
-									if (!fielded) {
-										resultsHolder.add("FieldWrite", commit);
-										statsHolder.increment("FieldWrite");
-									}
-									fielded = true;
-
-									action = "FieldWrite";
-								}
-
-								if (result.containsAction("Remove", "Assignment") || result.containsAction("Insert", "Assignment")
-										|| result.containsAction("Update", "Assignment")) {
-									if (!assigned) {
-										resultsHolder.add("Assignment", commit);
-										statsHolder.increment("Assignment");
-									}
-									assigned = true;
-
-									action = "Assignment";
-								}
-
-								if (result.containsAction("Remove", "Return") || result.containsAction("Insert", "Return")
-										|| result.containsAction("Update", "Return")) {
-									if (!returned) {
-										resultsHolder.add("Return", commit);
-										statsHolder.increment("Return");
-									}
-									returned = true;
-
-									action = "Return";
-								}
-
-								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
-										|| result.containsAction("Update", "LocalVariable")) {
-									if (!localed) {
-										resultsHolder.add("LocalVariable", commit);
-										statsHolder.increment("LocalVariable");
-									}
-									localed = true;
-
-									action = "LocalVariable";
-								}
 							}
 
 							catch (Exception e) {
@@ -242,6 +239,7 @@ public class CommitAnalyzer {
 						}
 					}
 				}
+
 				if (faulty)
 					statsHolder.increment("commit_error");
 
@@ -269,6 +267,7 @@ public class CommitAnalyzer {
 
 		long duration = (endTime - startTime) / 1000000;
 		System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
+		System.out.println(" BLBL : " + blbl);
 	}
 
 	public void probeOddCodeCommit(String filepath) throws Exception {
@@ -325,8 +324,7 @@ public class CommitAnalyzer {
 							f2.delete();
 
 							/*
-							 * First checking : if it contains an indicated
-							 * action
+							 * First checking : if it contains an indicated action
 							 */
 							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
 									|| result.containsAction("Update", "FieldWrite")) {
@@ -459,8 +457,7 @@ public class CommitAnalyzer {
 								f2.delete();
 
 								/*
-								 * First checking : if it contains an indicated
-								 * action
+								 * First checking : if it contains an indicated action
 								 */
 								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
 										|| result.containsAction("Update", "FieldWrite")) {
