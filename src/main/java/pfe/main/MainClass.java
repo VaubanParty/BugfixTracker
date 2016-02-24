@@ -20,8 +20,8 @@ public class MainClass {
 			projectOwner = args[0];
 			project = args[1];
 			CommitAnalyzer bugfix = new CommitAnalyzer();
-			// bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
-			bugfix.probeAllCommits();
+			bugfix.probeOddCodeCommit("facebook-android-sdk.pairs.txt");
+			// bugfix.probeAllCommits();
 			// bugfix.commitSampleTry("faae1d6fd17db198e1da3736b8e152390c23a33b");
 		}
 
