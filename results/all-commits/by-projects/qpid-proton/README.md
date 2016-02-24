@@ -1,15 +1,3 @@
-
-461 files with errors (=not treated)
-2880 commits
-203 commits with errors
-****************************
-112 updates or insert of assignments
-204 updates or insert of local variables
-84 updates or insert of returns
-29 updates or insert of field written
-****************************
-1 commits with ONLY ONE assignment
-1 commits with ONLY ONE local variables
-0 commits with ONLY ONE returns
-0 commits with ONLY ONE field written
-50 commits with ONLY ONE change != from the four others
+| Number of commits | Commit with errors | Assignments                                                                                                                                | Local Variables                                                                                                                          | Field Write                                                                                                                               | Returns                                                                                                                               | Single Assignment                                                                                                                    | Single Local Variable | Single Field Write | Single Return                                                                                                                    | Single changes not treated | Files with errors | Run Total time |
+|-------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------|----------------------------|-------------------|----------------|
+| 2880              | 203                | [112](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/assignment/at_least_one/README.md) | [204](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/localvar/at_least_one/README.md) | [29](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/fieldwrite/at_least_one/README.md) | [84](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/return/at_least_one/README.md) | [2](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/assignment/only_one/README.md) | 0                     | 0                  | [2](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/qpid-proton/return/only_one/README.md) | 50                         | 461               | ~7 minutes     |
