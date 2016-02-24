@@ -1,17 +1,3 @@
-
-3956 files with errors (=not treated)
-****************************
-2916 updates or insert of assignments
-5864 updates or insert of local variables
-2078 updates or insert of returns
-694 updates or insert of field written
-****************************
-72 commits with ONLY ONE assignment
-40 commits with ONLY ONE local variables
-12 commits with ONLY ONE returns
-1 commits with ONLY ONE field written
-
-
 | Number of commits | Commits with errors | Assignments                                                                                                                                | Local Variables                                                                                                                          | Field Write                                                                                                                               | Returns                                                                                                                               | Single Assignment                                                                                                                    | Single Local Variable | Single Field Write | Single Return                                                                                                                    | Single changes not treated | Files with errors | Run Total time |
 |-------------------|--------------------|--------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|-------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------|-----------------------|--------------------|----------------------------------------------------------------------------------------------------------------------------------|----------------------------|-------------------|----------------|
 | 30060              | 2428                | [2916](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/assignment/at_least_one/README.md) | [5864](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/localvar/at_least_one/README.md) | [694](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/fieldwrite/at_least_one/README.md) | [2078](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/return/at_least_one/README.md) | [72](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/assignment/only_one/README.md) | [40](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/localvar/only_one/README.md)                     | [1](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/fieldwrite/only_one/README.md)                  | [12](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/wicket/return/only_one/README.md) | 50                         | 3554               | ~ 3h 50 minutes     |
