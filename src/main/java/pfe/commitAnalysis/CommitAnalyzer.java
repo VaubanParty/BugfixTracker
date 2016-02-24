@@ -135,7 +135,6 @@ public class CommitAnalyzer {
 	/** Main method, probes all commits of a given repo and analyzes it */
 	public void probeAllCommits() throws Exception {
 		long startTime = System.nanoTime();
-		int blbl = 0;
 		resultsHolder = new DataResultsHolder(project, projectOwner, "all-commits");
 
 		Iterable<RevCommit> commits = commitAnalyzingUtils.getAllCommits(git);
@@ -183,7 +182,6 @@ public class CommitAnalyzer {
 									totalactions.add(a);
 									String actType = a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
 									if (actType.contains("LocalVariable")) {
-										blbl++;
 										System.out.println(actType);
 									}
 
@@ -267,7 +265,6 @@ public class CommitAnalyzer {
 
 		long duration = (endTime - startTime) / 1000000;
 		System.out.println("Execution time : " + duration + "ms (" + duration / 1000 + "s)");
-		System.out.println(" BLBL : " + blbl);
 	}
 
 	public void probeOddCodeCommit(String filepath) throws Exception {
