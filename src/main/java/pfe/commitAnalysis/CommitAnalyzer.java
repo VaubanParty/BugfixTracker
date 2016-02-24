@@ -16,8 +16,9 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.util.io.DisabledOutputStream;
 
-import pfe.resultHandling.DataResultsHolder;
-import pfe.resultHandling.DataStatsHolder;
+import pfe.datas.DataResultsHolder;
+import pfe.datas.DataStatsHolder;
+import pfe.main.MainClass;
 
 import com.github.gumtreediff.actions.model.Action;
 
@@ -64,9 +65,9 @@ public class CommitAnalyzer {
 	private RevWalk rw;
 
 	/** Classic constructor */
-	public CommitAnalyzer(String[] args) throws Exception {
-		projectOwner = args[0];
-		project = args[1];
+	public CommitAnalyzer() throws Exception {
+		projectOwner = MainClass.projectOwner;
+		project = MainClass.project;
 
 		directoryPath = "../bugfixRepoSamples/" + project + "/.git";
 
