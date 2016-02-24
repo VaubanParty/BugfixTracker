@@ -14,7 +14,7 @@ completely. Thank you !
 
 
 
-### Individual research project checked by Martin Monperrus for the University of Lille 1
+# Individual research project checked by Martin Monperrus for the University of Lille 1
 
 ## Goal
 -----
@@ -25,7 +25,7 @@ provide a data set in order to perform bug classification, and open a new way to
 
 ## Libraries used
 --------------
-# [Spoon](http://spoon.gforge.inria.fr/)
+### [Spoon](http://spoon.gforge.inria.fr/)
 ------
 Spoon is an open-source library for analyzing and transforming Java source code. External contributions as pull requests are welcome !
 The mission of Spoon is to provide a high-quality library for analyzing and transforming Java source code.
@@ -46,18 +46,18 @@ The mission of Spoon is to provide a high-quality library for analyzing and tran
 }
 ```
 
-# [Gumtree AST Diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)
+### [Gumtree AST Diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)
 --------------------
 The INRIA laboratory implemented the Gumtree algorith, which allows to compare two files as AST and not
 as plain texts, giving structural details about changes and useful informations when analyzing code.
 
-# [Gitective](https://github.com/kevinsawicki/gitective)
+### [Gitective](https://github.com/kevinsawicki/gitective)
 -------------
 Even though it is not maintained, a few featurs of Gitective were used in this work, especially about
 getting back content from files in commit versions. Commits are representend as Blob objects, and you
 cannot directly grab the content of a file from a commit ID. That is where Gitective went in action.
 
-# [JGit](https://eclipse.org/jgit/)
+### [JGit](https://eclipse.org/jgit/)
 -------
 [The Eclispe foundation](https://eclipse.org) implemented a lot of methods and features about managing
 Git objects, and it is obviously used here in order to represent as an object a Repository, a Commit,
@@ -65,7 +65,7 @@ a Git instance or any object used in Git.
 
 ## Installation details
 ----------------------
-# Required libraries
+### Required libraries
 Even though the [pom.xml](https://github.com/ybadache/BugfixTracker/blob/master/pom.xml) file will provide you
 every useful library you need, the Gumtree Java implementation isn't available on Maven. In order to use it,
 you have two choices:
@@ -76,7 +76,7 @@ Until the repository turns to public using Maven, those are the only ways to use
 
 ## Software details
 ---------------
-# Changes detected
+### Changes detected
 At the moment, the software can detect four changes between two files, the others being classified as "Others":
    - Assignments
    - Return values
@@ -85,7 +85,7 @@ At the moment, the software can detect four changes between two files, the other
 If you want to add another change type, you just have to create another Singleton instance, following the ChangeSingleton
 interface, and applying the name you want through the code. Then, add your condition to the StoreResult class. And that's it !
   
-# Data set
+### Data set
 ---------
 At today's date, the following repositories were chosen to being analyzed:
 * [Aries](https://github.com/apache/aries)
