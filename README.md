@@ -3,15 +3,13 @@ BugfixTracker
 
 :rotating_light: WARNING :rotating_light:
 
-This work is under heavy refactoring. The informations provided here -especially about software details-
-aren't fully working, as I am working on a more elegant structure for this project. Please be gentle
-while judging and criticism on this specific part of the program, as the software is still working
-completely. Thank you !
+This work is currently under heavy refactoring. The informations provided here -especially about software details-
+aren't fully working, as I am working on a more elegant structure for this project. Please be comprehensive,
+as the software is fully working and give correct datas and results.
 
 			-- Yassine Badache
 
-:rotating_light: WARNING :rotating_light:
-
+:rotating_light: END OF WARNING :rotating_light:
 
 
 # Individual research project checked by Martin Monperrus for the University of Lille 1
