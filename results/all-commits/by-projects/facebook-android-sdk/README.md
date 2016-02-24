@@ -1,15 +1,3 @@
-
-692 files with errors (=not treated)
-560 commits
-208 commits with errors
-****************************
-148 updates or insert of assignments
-203 updates or insert of local variables
-80 updates or insert of returns
-50 updates or insert of field written
-****************************
-2 commits with ONLY ONE assignment
-0 commits with ONLY ONE local variables
-2 commits with ONLY ONE returns
-0 commits with ONLY ONE field written
-38 commits with ONLY ONE change != from the four others
+| Number of commits | Commit with errors | Assignments                                                                                                                                         | Local Variables                                                                                                                                   | Field Write                                                                                                                                        | Returns                                                                                                                                        | Single Assignment                                                                                                                             | Single Local Variable | Single Field Write | Single Return                                                                                                                             | Single changes not treated | Files with errors | Run Total time |
+|-------------------|--------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|--------------------|-------------------------------------------------------------------------------------------------------------------------------------------|----------------------------|-------------------|----------------|
+| 560               | 203                | [112](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/assignment/at_least_one/README.md) | [204](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/localvar/at_least_one/README.md) | [29](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/fieldwrite/at_least_one/README.md) | [84](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/return/at_least_one/README.md) | [2](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/assignment/only_one/README.md) | 0                     | 0                  | [2](https://github.com/ybadache/BugfixTracker/blob/master/results/all-commits/by-projects/facebook-android-sdk/return/only_one/README.md) | 38                         | 692               | ~10 minutes     |

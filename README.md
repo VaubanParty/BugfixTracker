@@ -1,56 +1,91 @@
 BugfixTracker
 =============
 
-## Individual research project checked by Martin Monperrus for the University of Lille 
+:rotating_light: WARNING :rotating_light:
+
+This work is currently under heavy refactoring. The informations provided here -especially about software details-
+aren't fully working, as I am working on a more elegant structure for this project. Please be comprehensive,
+as the software is fully working and give correct datas and results.
+
+			-- Yassine Badache
+
+:rotating_light: END OF WARNING :rotating_light:
 
 
+# Individual research project checked by Martin Monperrus for the University of Lille 1
 
-Goals
+## Goal
 -----
+The main goal of this work is to provide a way to probe commits in a given repository, and analyze them
+using the [Spoon](http://spoon.gforge.inria.fr/) library. Into those commits, we are comparing each
+file (previous and current version), heading for AST changes into this file. The final goal is to
+provide a data set in order to perform bug classification, and open a new way to fix bugs automatically.
 
-* First, being able to probe for all commits in a given Github repository. The goal here is to use SpoonLabs'
-tool "Diff Spoon" (1) to compare each .java file in a given revision on a syntaxic level, by comparing AST of both files.
-* Then, filtering those commits to check only for introduced and fixed bugs, and working
-  with the datas given by Diff Spoon to be able to classify each type of bug fix. 
-* [NOT YET DEFINED]
-        
+## Libraries used
+--------------
+### [Spoon](http://spoon.gforge.inria.fr/)
+------
+Spoon is an open-source library for analyzing and transforming Java source code. External contributions as pull requests are welcome !
+The mission of Spoon is to provide a high-quality library for analyzing and transforming Java source code.
 
+- If you use Spoon for industrial purposes, please consider funding Spoon through a research contract with Inria (contact Martin Monperrus for this).
 
-Done
-----
-Bugfix Tracker is able to, on a given Github repository, probe on all commits and using the
-AST difference between modified .java files to classify four types of changes, defined on
-instructions from my project's teacher, Martin Monperrus. They only check for both update or
-insertion, and a given commit can belong to more that one class:
+- If you use Spoon for academic purposes, please cite: Renaud Pawlak, Martin Monperrus, Nicolas Petitprez, Carlos Noguera, Lionel Seinturier. “Spoon: A Library for Implementing Analyses and Transformations of Java Source Code”. In Software: Practice and Experience, Wiley-Blackwell, 2015. Doi: 10.1002/spe.2346.
+
+```
+@article{pawlak:hal-01169705,
+  TITLE = {{Spoon: A Library for Implementing Analyses and Transformations of Java Source Code}},
+  AUTHOR = {Pawlak, Renaud and Monperrus, Martin and Petitprez, Nicolas and Noguera, Carlos and Seinturier, Lionel},
+  JOURNAL = {{Software: Practice and Experience}},
+  PUBLISHER = {{Wiley-Blackwell}},
+  PAGES = {na},
+  YEAR = {2015},
+  doi = {10.1002/spe.2346},
+}
+```
+
+### [Gumtree AST Diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff)
+--------------------
+The INRIA laboratory implemented the Gumtree algorith, which allows to compare two files as AST and not
+as plain texts, giving structural details about changes and useful informations when analyzing code.
+
+### [Gitective](https://github.com/kevinsawicki/gitective)
+-------------
+Even though it is not maintained, a few featurs of Gitective were used in this work, especially about
+getting back content from files in commit versions. Commits are representend as Blob objects, and you
+cannot directly grab the content of a file from a commit ID. That is where Gitective went in action.
+
+### [JGit](https://eclipse.org/jgit/)
+-------
+[The Eclispe foundation](https://eclipse.org) implemented a lot of methods and features about managing
+Git objects, and it is obviously used here in order to represent as an object a Repository, a Commit,
+a Git instance or any object used in Git.
+
+## Installation details
+----------------------
+### Required libraries
+Even though the [pom.xml](https://github.com/ybadache/BugfixTracker/blob/master/pom.xml) file will provide you
+every useful library you need, the Gumtree Java implementation isn't available on Maven. In order to use it,
+you have two choices:
+	- Clone the [Gumtree AST Diff](https://github.com/SpoonLabs/gumtree-spoon-ast-diff) repository, and use it as a reference through your IDE.
+	- After cloning, turn the Gumtree into a .jar, and add it to your external depedencies.
+
+Until the repository turns to public using Maven, those are the only ways to use Gumtree, thus this software.
+
+## Software details
+---------------
+### Changes detected
+At the moment, the software can detect four changes between two files, the others being classified as "Others":
    - Assignments
    - Return values
-   - Field reads
+   - Field write
    - Local variables
-        
-        
-[02/12/2015] BugfixTracker is fully working on Cassandra, getting error files in order to correct
-Spoon or detecting failures. Five errors are actually caught:
-   - NullPointerException
-   - AbortCompilation
-   - IndexOutOfBounds
-   - SpoonClassNotFound
-   - RuntimeException
-   		
-[02/12/2015] Experimentations began.
-
-[07/12/2015] Added StackOverflowException to the error list.
-    
-    
-    
-Results
--------
-Results are given in [this table.](https://github.com/VaubanParty/BugfixTracker/blob/master/results/table.md)
-    
-   
-Data Set
---------
-I am currently working on the following projects:
-
+If you want to add another change type, you just have to create another Singleton instance, following the ChangeSingleton
+interface, and applying the name you want through the code. Then, add your condition to the StoreResult class. And that's it !
+  
+### Data set
+---------
+At today's date, the following repositories were chosen to being analyzed:
 * [Aries](https://github.com/apache/aries)
 * [Atmosphere](https://github.com/Atmosphere/atmosphere)
 * [Cassandra](https://github.com/apache/cassandra)
@@ -64,16 +99,15 @@ I am currently working on the following projects:
 * [Presto](https://github.com/facebook/presto)
 * [Qpid Proton](https://github.com/apache/qpid-proton)
 * [Wicket](https://github.com/apache/wicket)
-    
 
-        
-(*) DiffSpoon: Fine-grained and Accurate Source Code Differencing (Jean-Rémy Falleri, Floréal Morandat,
-Xavier Blanc, Matias Martinez, Martin Monperrus), In Proceedings of the International Conference on
-Automated Software Engineering, 2014.
+Two others data sets were given: one from [Odd Code](http://odd-code.github.io/), and one from a .xmls file
+provided by the head teacher of this project, Martin Monperrus.
 
+## Results
+-------
+Results are given in [this table.](https://github.com/VaubanParty/BugfixTracker/blob/master/results/table.md)
 
-
-Misc
+## Misc
 ----
 Interesting observations have been made while running this algorithm on Elastic Search. Indeed, the algorithm
 found no less than 30 025 commits, while both Git command and online Git repository show a number around 17 000.
