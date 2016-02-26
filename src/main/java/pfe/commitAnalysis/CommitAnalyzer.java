@@ -182,9 +182,6 @@ public class CommitAnalyzer {
 								for (Action a : actions) {
 									totalactions.add(a);
 									String actType = a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
-									if (actType.contains("LocalVariable")) {
-										System.out.println(actType);
-									}
 
 									if (actType.equals("CtFieldWriteImpl")) {
 										if (!fielded) {
@@ -316,57 +313,51 @@ public class CommitAnalyzer {
 
 							for (Action a : actions) {
 								totalactions.add(a);
+								String actType = a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
+
+								if (actType.equals("CtFieldWriteImpl")) {
+									if (!fielded) {
+										resultsHolder.add("FieldWrite", bf_sha);
+										statsHolder.increment("FieldWrite");
+									}
+									fielded = true;
+
+									action = "FieldWrite";
+								}
+
+								if (actType.equals("CtAssignmentImpl")) {
+									if (!assigned) {
+										resultsHolder.add("Assignment", bf_sha);
+										statsHolder.increment("Assignment");
+									}
+									assigned = true;
+
+									action = "Assignment";
+								}
+
+								if (actType.equals("CtReturnImpl")) {
+									if (!returned) {
+										resultsHolder.add("Return", bf_sha);
+										statsHolder.increment("Return");
+									}
+									returned = true;
+
+									action = "Return";
+								}
+
+								if (actType.equals("CtLocalVariableImpl")) {
+									if (!localed) {
+										resultsHolder.add("LocalVariable", bf_sha);
+										statsHolder.increment("LocalVariable");
+									}
+									localed = true;
+
+									action = "LocalVariable";
+								}
 							}
 
 							f1.delete();
 							f2.delete();
-
-							/*
-							 * First checking : if it contains an indicated action
-							 */
-							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
-									|| result.containsAction("Update", "FieldWrite")) {
-								if (!fielded) {
-									resultsHolder.add("FieldWrite", bf_sha);
-									statsHolder.increment("FieldWrite");
-								}
-								fielded = true;
-
-								action = "FieldWrite";
-							}
-
-							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Assignment")
-									|| result.containsAction("Update", "Assignment")) {
-								if (!assigned) {
-									resultsHolder.add("Assignment", bf_sha);
-									statsHolder.increment("Assignment");
-								}
-								assigned = true;
-
-								action = "Assignment";
-							}
-
-							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Return")
-									|| result.containsAction("Update", "Return")) {
-								if (!returned) {
-									resultsHolder.add("Return", bf_sha);
-									statsHolder.increment("Return");
-								}
-								returned = true;
-
-								action = "Return";
-							}
-
-							if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
-									|| result.containsAction("Update", "LocalVariable")) {
-								if (!localed) {
-									resultsHolder.add("LocalVariable", bf_sha);
-									statsHolder.increment("LocalVariable");
-								}
-								localed = true;
-
-								action = "LocalVariable";
-							}
 						}
 
 						catch (Exception e) {
@@ -449,59 +440,52 @@ public class CommitAnalyzer {
 
 								for (Action a : actions) {
 									totalactions.add(a);
+									String actType = a.getNode().getMetadata(SpoonGumTreeBuilder.SPOON_OBJECT).getClass().getSimpleName();
+
+									if (actType.equals("CtFieldWriteImpl")) {
+										if (!fielded) {
+											resultsHolder.add("FieldWrite", commit);
+											statsHolder.increment("FieldWrite");
+										}
+										fielded = true;
+
+										action = "FieldWrite";
+									}
+
+									if (actType.equals("CtAssignmentImpl")) {
+										if (!assigned) {
+											resultsHolder.add("Assignment", commit);
+											statsHolder.increment("Assignment");
+										}
+										assigned = true;
+
+										action = "Assignment";
+									}
+
+									if (actType.equals("CtReturnImpl")) {
+										if (!returned) {
+											resultsHolder.add("Return", commit);
+											statsHolder.increment("Return");
+										}
+										returned = true;
+
+										action = "Return";
+									}
+
+									if (actType.equals("CtLocalVariableImpl")) {
+										if (!localed) {
+											resultsHolder.add("LocalVariable", commit);
+											statsHolder.increment("LocalVariable");
+										}
+										localed = true;
+
+										action = "LocalVariable";
+									}
 								}
 
 								f1.delete();
 								f2.delete();
 
-								/*
-								 * First checking : if it contains an indicated action
-								 */
-								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "FieldWrite")
-										|| result.containsAction("Update", "FieldWrite")) {
-									if (!fielded) {
-										resultsHolder.add("FieldWrite", commit);
-										statsHolder.increment("FieldWrite");
-									}
-									fielded = true;
-
-									action = "FieldWrite";
-									// System.out.println("Changer value: " +
-									// nbchanges + "(" + action + ")");
-								}
-
-								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Assignment")
-										|| result.containsAction("Update", "Assignment")) {
-									if (!assigned) {
-										resultsHolder.add("Assignment", commit);
-										statsHolder.increment("Assignment");
-									}
-									assigned = true;
-
-									action = "Assignment";
-								}
-
-								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "Return")
-										|| result.containsAction("Update", "Return")) {
-									if (!returned) {
-										resultsHolder.add("Return", commit);
-										statsHolder.increment("Return");
-									}
-									returned = true;
-
-									action = "Return";
-								}
-
-								if (result.containsAction("Remove", "LocalVariable") || result.containsAction("Insert", "LocalVariable")
-										|| result.containsAction("Update", "LocalVariable")) {
-									if (!localed) {
-										resultsHolder.add("LocalVariable", commit);
-										statsHolder.increment("LocalVariable");
-									}
-									localed = true;
-
-									action = "LocalVariable";
-								}
 							}
 
 							catch (Exception e) {
